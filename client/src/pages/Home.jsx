@@ -12,12 +12,26 @@ const roles = [
   { title: "Machine Learning Engineer", icon: "🤖" },
 ];
 
+const tips = [
+  "⭐ Use the STAR method (Situation, Task, Action, Result) for behavioral questions.",
+  "💡 Research the company before your interview — know their product and mission.",
+  "🎯 Be specific in your answers — vague answers get low scores.",
+  "⏱️ Practice answering within 2 minutes — concise answers impress interviewers.",
+  "🤝 Always ask questions at the end of your interview — it shows genuine interest.",
+  "📚 Review data structures and algorithms even for non-coding roles.",
+  "💪 Confidence matters — speak clearly and maintain eye contact.",
+  "🔁 Practice the same question multiple times — repetition builds confidence.",
+  "📝 Prepare 3 strong examples from past experience before any interview.",
+  "🚀 Show enthusiasm — interviewers hire people who genuinely want the role.",
+];
+
 function Home() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const [customRole, setCustomRole] = useState("");
   const [difficulty, setDifficulty] = useState("Medium");
   const [questionCount, setQuestionCount] = useState(5);
+  const todayTip = tips[new Date().getDate() % tips.length];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -112,6 +126,12 @@ function Home() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Tip of the Day */}
+      <div style={styles.tipBox}>
+        <p style={styles.tipTitle}>💡 Tip of the Day</p>
+        <p style={styles.tipText}>{todayTip}</p>
       </div>
 
       {/* Question Count Selector */}
@@ -317,6 +337,29 @@ const styles = {
     color: "#fff",
     fontSize: "14px",
     fontWeight: "600",
+  },
+  tipBox: {
+    maxWidth: "700px",
+    margin: "0 auto 50px",
+    background:
+      "linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15))",
+    border: "1px solid rgba(102,126,234,0.3)",
+    borderRadius: "14px",
+    padding: "20px 24px",
+    textAlign: "center",
+  },
+  tipTitle: {
+    color: "#667eea",
+    fontWeight: "700",
+    fontSize: "14px",
+    marginBottom: "8px",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
+  },
+  tipText: {
+    color: "#ccc",
+    fontSize: "15px",
+    lineHeight: "1.6",
   },
 };
 
