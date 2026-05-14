@@ -16,6 +16,7 @@ function Interview() {
   const role = localStorage.getItem("selectedRole");
   const [timeLeft, setTimeLeft] = useState(120);
   const timerRef = useRef(null);
+  const [timeUp, setTimeUp] = useState(false);
 
   useEffect(() => {
     generateQuestions();
@@ -45,8 +46,6 @@ function Interview() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
-          toast.error("Time up! Auto submitting...");
-          handleSubmitAnswer();
           return 0;
         }
         return prev - 1;
@@ -56,22 +55,32 @@ function Interview() {
     return () => clearInterval(timerRef.current);
   }, [currentIndex, loading, feedback]);
 
+  useEffect(() => {
+    if (timeLeft === 0 && !feedback && !loading) {
+      toast.error("Time up! Auto submitting...");
+      setTimeUp(true);
+      handleSubmitAnswer();
+    }
+  }, [timeLeft]);
+
   const handleSubmitAnswer = async () => {
-    if (!answer.trim()) return;
+    clearInterval(timerRef.current);
     setEvaluating(true);
     setFeedback(null);
     try {
+      const finalAnswer =
+        answer.trim() || "I was unable to answer this question in time.";
       const res = await API.post("/api/interview/evaluate-answer", {
         role,
         question: questions[currentIndex],
-        answer,
+        answer: finalAnswer,
       });
       setFeedback(res.data);
       setAllResults((prev) => [
         ...prev,
         {
           question: questions[currentIndex],
-          answer,
+          answer: finalAnswer,
           feedback: res.data.feedback,
           score: res.data.score,
         },
@@ -90,6 +99,7 @@ function Interview() {
       setCurrentIndex((prev) => prev + 1);
       setAnswer("");
       setFeedback(null);
+      setTimeUp(false);
     }
   };
 
@@ -195,18 +205,29 @@ function Interview() {
         {!feedback && (
           <>
             <textarea
-              style={styles.textarea}
-              placeholder="Type your answer here..."
+              style={{
+                ...styles.textarea,
+                opacity: timeUp ? 0.5 : 1,
+              }}
+              placeholder={timeUp ? "Time up!" : "Type your answer here..."}
               value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
+              onChange={(e) => !timeUp && setAnswer(e.target.value)}
               rows={6}
+              disabled={timeUp}
             />
             <button
-              style={styles.submitBtn}
+              style={{
+                ...styles.submitBtn,
+                opacity: timeUp || evaluating || !answer.trim() ? 0.6 : 1,
+              }}
               onClick={handleSubmitAnswer}
-              disabled={evaluating || !answer.trim()}
+              disabled={evaluating || !answer.trim() || timeUp}
             >
-              {evaluating ? "Evaluating..." : "Submit Answer →"}
+              {evaluating
+                ? "Evaluating..."
+                : timeUp
+                  ? "Time Up! ⏱️"
+                  : "Submit Answer →"}
             </button>
           </>
         )}
