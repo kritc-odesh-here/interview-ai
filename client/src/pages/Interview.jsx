@@ -17,6 +17,7 @@ function Interview() {
   const [timeLeft, setTimeLeft] = useState(120);
   const timerRef = useRef(null);
   const [timeUp, setTimeUp] = useState(false);
+  const [reviewing, setReviewing] = useState(false);
 
   useEffect(() => {
     generateQuestions();
@@ -118,12 +119,61 @@ function Interview() {
         questions: allResults,
         overallScore,
       });
+      toast.success("Session saved! 🏆");
     } catch (err) {
       console.error(err);
     }
-    toast.success("Session saved! 🏆");
-    setFinished(true);
+    setReviewing(true);
   };
+
+  // Review screen
+  if (reviewing && !finished) {
+    const overallScore = Math.round(
+      allResults.reduce((sum, r) => sum + r.score, 0) / allResults.length,
+    );
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.role}>Review Your Answers 📝</h2>
+          <span style={styles.progress}>{role}</span>
+        </div>
+
+        <div style={styles.content}>
+          {allResults.map((result, index) => (
+            <div key={index} style={styles.reviewCard}>
+              <p style={styles.questionLabel}>
+                Q{index + 1}: {result.question}
+              </p>
+              <p style={styles.reviewAnswer}>📝 {result.answer}</p>
+              <p style={styles.reviewFeedback}>💬 {result.feedback}</p>
+              <span
+                style={{
+                  ...styles.miniScore,
+                  background:
+                    result.score >= 7
+                      ? "#00c48c"
+                      : result.score >= 5
+                        ? "#ffb347"
+                        : "#ff6b6b",
+                }}
+              >
+                Score: {result.score}/10
+              </span>
+            </div>
+          ))}
+
+          {/* Overall Score */}
+          <div style={styles.overallBox}>
+            <p style={styles.overallLabel}>Overall Score</p>
+            <p style={styles.overallScore}>{overallScore}/10</p>
+            <button style={styles.finishBtn} onClick={() => setFinished(true)}>
+              See Final Result 🏆
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Loading screen
   if (loading) {
@@ -493,6 +543,64 @@ const styles = {
   timer: {
     fontSize: "18px",
     fontWeight: "700",
+  },
+  reviewCard: {
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "16px",
+    padding: "24px",
+    marginBottom: "16px",
+    borderLeft: "4px solid #667eea",
+  },
+  reviewAnswer: {
+    color: "#aaa",
+    fontSize: "14px",
+    marginTop: "10px",
+    marginBottom: "8px",
+    lineHeight: "1.6",
+  },
+  reviewFeedback: {
+    color: "#888",
+    fontSize: "13px",
+    marginBottom: "12px",
+    lineHeight: "1.6",
+  },
+  miniScore: {
+    padding: "4px 12px",
+    borderRadius: "12px",
+    color: "#fff",
+    fontSize: "12px",
+    fontWeight: "600",
+  },
+  overallBox: {
+    textAlign: "center",
+    padding: "40px",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "16px",
+    marginTop: "24px",
+  },
+  overallLabel: {
+    color: "#888",
+    fontSize: "16px",
+    marginBottom: "12px",
+  },
+  overallScore: {
+    fontSize: "52px",
+    fontWeight: "800",
+    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    marginBottom: "24px",
+  },
+  finishBtn: {
+    padding: "14px 32px",
+    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    border: "none",
+    borderRadius: "10px",
+    color: "#fff",
+    fontSize: "16px",
+    fontWeight: "600",
   },
 };
 
