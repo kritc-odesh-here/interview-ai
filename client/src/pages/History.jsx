@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import API from "../utils/api";
 
 function History() {
@@ -27,7 +36,6 @@ function History() {
     return new Date(dateStr).toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",
-      year: "numeric",
     });
   };
 
@@ -36,6 +44,13 @@ function History() {
     if (score >= 5) return "#ffb347";
     return "#ff6b6b";
   };
+
+  // Prepare chart data
+  const chartData = [...sessions].reverse().map((session, index) => ({
+    name: `#${index + 1} ${session.role.split(" ")[0]}`,
+    score: session.overallScore,
+    date: formatDate(session.createdAt),
+  }));
 
   if (loading) {
     return (
@@ -66,58 +81,134 @@ function History() {
             </button>
           </div>
         ) : (
-          sessions.map((session, index) => (
-            <div key={session._id} style={styles.card}>
-              {/* Session Header */}
-              <div
-                style={styles.cardHeader}
-                onClick={() => setExpanded(expanded === index ? null : index)}
-              >
-                <div style={styles.cardLeft}>
-                  <span style={styles.roleText}>{session.role}</span>
-                  <span style={styles.dateText}>
-                    {formatDate(session.createdAt)}
-                  </span>
-                </div>
-                <div style={styles.cardRight}>
-                  <span
-                    style={{
-                      ...styles.scoreBadge,
-                      background: getScoreColor(session.overallScore),
-                    }}
-                  >
-                    {session.overallScore}/10
-                  </span>
-                  <span style={styles.arrow}>
-                    {expanded === index ? "▲" : "▼"}
-                  </span>
+          <>
+            {/* Progress Chart */}
+            {sessions.length > 1 && (
+              <div style={styles.chartBox}>
+                <h3 style={styles.chartTitle}>📈 Your Progress</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={chartData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(255,255,255,0.05)"
+                    />
+                    <XAxis
+                      dataKey="name"
+                      stroke="#666"
+                      fontSize={12}
+                      tick={{ fill: "#666" }}
+                    />
+                    <YAxis
+                      domain={[0, 10]}
+                      stroke="#666"
+                      fontSize={12}
+                      tick={{ fill: "#666" }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: "#1a1a2e",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "8px",
+                        color: "#fff",
+                      }}
+                      formatter={(value) => [`${value}/10`, "Score"]}
+                      labelFormatter={(label) => `Session: ${label}`}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#667eea"
+                      strokeWidth={3}
+                      dot={{ fill: "#764ba2", r: 6 }}
+                      activeDot={{ r: 8, fill: "#667eea" }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+
+                {/* Stats Row */}
+                <div style={styles.statsRow}>
+                  <div style={styles.statBox}>
+                    <p style={styles.statValue}>{sessions.length}</p>
+                    <p style={styles.statLabel}>Total Sessions</p>
+                  </div>
+                  <div style={styles.statBox}>
+                    <p style={styles.statValue}>
+                      {Math.round(
+                        sessions.reduce((sum, s) => sum + s.overallScore, 0) /
+                          sessions.length,
+                      )}
+                      /10
+                    </p>
+                    <p style={styles.statLabel}>Average Score</p>
+                  </div>
+                  <div style={styles.statBox}>
+                    <p style={styles.statValue}>
+                      {Math.max(...sessions.map((s) => s.overallScore))}/10
+                    </p>
+                    <p style={styles.statLabel}>Best Score</p>
+                  </div>
+                  <div style={styles.statBox}>
+                    <p style={styles.statValue}>
+                      {sessions[0]?.overallScore}/10
+                    </p>
+                    <p style={styles.statLabel}>Latest Score</p>
+                  </div>
                 </div>
               </div>
+            )}
 
-              {/* Expanded Questions */}
-              {expanded === index && (
-                <div style={styles.questionsBox}>
-                  {session.questions.map((q, i) => (
-                    <div key={i} style={styles.questionItem}>
-                      <p style={styles.questionLabel}>
-                        Q{i + 1}: {q.question}
-                      </p>
-                      <p style={styles.answerText}>📝 {q.answer}</p>
-                      <p style={styles.feedbackText}>💬 {q.feedback}</p>
-                      <span
-                        style={{
-                          ...styles.miniScore,
-                          background: getScoreColor(q.score),
-                        }}
-                      >
-                        Score: {q.score}/10
-                      </span>
-                    </div>
-                  ))}
+            {/* Sessions List */}
+            {sessions.map((session, index) => (
+              <div key={session._id} style={styles.card}>
+                <div
+                  style={styles.cardHeader}
+                  onClick={() => setExpanded(expanded === index ? null : index)}
+                >
+                  <div style={styles.cardLeft}>
+                    <span style={styles.roleText}>{session.role}</span>
+                    <span style={styles.dateText}>
+                      {formatDate(session.createdAt)}
+                    </span>
+                  </div>
+                  <div style={styles.cardRight}>
+                    <span
+                      style={{
+                        ...styles.scoreBadge,
+                        background: getScoreColor(session.overallScore),
+                      }}
+                    >
+                      {session.overallScore}/10
+                    </span>
+                    <span style={styles.arrow}>
+                      {expanded === index ? "▲" : "▼"}
+                    </span>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))
+
+                {expanded === index && (
+                  <div style={styles.questionsBox}>
+                    {session.questions.map((q, i) => (
+                      <div key={i} style={styles.questionItem}>
+                        <p style={styles.questionLabel}>
+                          Q{i + 1}: {q.question}
+                        </p>
+                        <p style={styles.answerText}>📝 {q.answer}</p>
+                        <p style={styles.feedbackText}>💬 {q.feedback}</p>
+                        <span
+                          style={{
+                            ...styles.miniScore,
+                            background: getScoreColor(q.score),
+                          }}
+                        >
+                          Score: {q.score}/10
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </>
         )}
       </div>
     </div>
@@ -184,6 +275,43 @@ const styles = {
     color: "#fff",
     fontSize: "15px",
     fontWeight: "600",
+  },
+  chartBox: {
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "16px",
+    padding: "24px",
+    marginBottom: "30px",
+  },
+  chartTitle: {
+    color: "#fff",
+    fontSize: "18px",
+    fontWeight: "700",
+    marginBottom: "20px",
+  },
+  statsRow: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gap: "16px",
+    marginTop: "24px",
+  },
+  statBox: {
+    textAlign: "center",
+    background: "rgba(255,255,255,0.05)",
+    borderRadius: "12px",
+    padding: "16px",
+  },
+  statValue: {
+    fontSize: "24px",
+    fontWeight: "800",
+    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    marginBottom: "4px",
+  },
+  statLabel: {
+    color: "#888",
+    fontSize: "12px",
   },
   card: {
     background: "rgba(255,255,255,0.05)",
