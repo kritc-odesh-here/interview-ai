@@ -17,6 +17,7 @@ function Home() {
   const user = JSON.parse(localStorage.getItem("user"));
   const [customRole, setCustomRole] = useState("");
   const [difficulty, setDifficulty] = useState("Medium");
+  const [questionCount, setQuestionCount] = useState(5);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -27,6 +28,7 @@ function Home() {
   const startInterview = (role) => {
     localStorage.setItem("selectedRole", role);
     localStorage.setItem("difficulty", difficulty);
+    localStorage.setItem("questionCount", questionCount);
     navigate("/interview");
   };
 
@@ -107,6 +109,32 @@ function Home() {
                 : level === "Medium"
                   ? "😤 Medium"
                   : "🔥 Hard"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Question Count Selector */}
+      <div style={styles.difficultyBox}>
+        <p style={styles.difficultyLabel}>Number of Questions</p>
+        <div style={styles.difficultyBtns}>
+          {[5, 10, 15].map((count) => (
+            <button
+              key={count}
+              style={{
+                ...styles.diffBtn,
+                background:
+                  questionCount === count
+                    ? "linear-gradient(90deg, #667eea, #764ba2)"
+                    : "rgba(255,255,255,0.08)",
+                border:
+                  questionCount === count
+                    ? "none"
+                    : "1px solid rgba(255,255,255,0.15)",
+              }}
+              onClick={() => setQuestionCount(count)}
+            >
+              {count} Questions
             </button>
           ))}
         </div>

@@ -26,10 +26,15 @@ function Interview() {
     setLoading(true);
     try {
       const difficulty = localStorage.getItem("difficulty") || "Medium";
+      const questionCount =
+        parseInt(localStorage.getItem("questionCount")) || 5;
+      console.log("Sending:", { role, difficulty, questionCount });
       const res = await API.post("/api/interview/generate-questions", {
         role,
         difficulty,
+        questionCount,
       });
+      console.log("Got questions:", res.data.questions.length);
       setQuestions(res.data.questions);
     } catch (err) {
       toast.error("Failed to generate questions. Try again!");

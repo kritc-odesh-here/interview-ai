@@ -9,9 +9,11 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 // GENERATE QUESTIONS
 router.post("/generate-questions", protect, async (req, res) => {
   try {
-    const { role, difficulty } = req.body;
+    const { role, difficulty, questionCount } = req.body;
 
-    const prompt = `You are an expert technical interviewer. Generate exactly 5 ${difficulty} level interview questions for a ${role} position.
+    const prompt = `You are an expert technical interviewer. Your task is to generate EXACTLY ${questionCount} interview questions for a ${role} position at ${difficulty} difficulty level.
+
+IMPORTANT: You MUST generate EXACTLY ${questionCount} questions. Not more, not less.
 
 Rules:
 - Mix of technical and behavioral questions
@@ -19,16 +21,16 @@ Rules:
 - ${difficulty === "Easy" ? "Questions should be basic and beginner friendly" : difficulty === "Medium" ? "Questions should be intermediate level" : "Questions should be advanced and challenging"}
 - Each question should be clear and concise
 
-Respond in this exact JSON format only, no extra text:
+Respond in this exact JSON format only, no extra text, no markdown:
 {
   "questions": [
     "Question 1 here",
     "Question 2 here",
-    "Question 3 here",
-    "Question 4 here",
-    "Question 5 here"
+    "Question 3 here"
   ]
-}`;
+}
+
+Remember: The array must have EXACTLY ${questionCount} items.`;
 
     const result = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
