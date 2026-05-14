@@ -1,0 +1,272 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "../utils/api";
+
+function History() {
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
+
+  const fetchSessions = async () => {
+    try {
+      const res = await API.get("/api/interview/sessions");
+      setSessions(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const getScoreColor = (score) => {
+    if (score >= 7) return "#00c48c";
+    if (score >= 5) return "#ffb347";
+    return "#ff6b6b";
+  };
+
+  if (loading) {
+    return (
+      <div style={styles.centered}>
+        <p style={{ color: "#888" }}>Loading history...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.container}>
+      {/* Navbar */}
+      <div style={styles.navbar}>
+        <button style={styles.backBtn} onClick={() => navigate("/")}>
+          ← Back to Home
+        </button>
+        <h2 style={styles.title}>Interview History 📋</h2>
+        <div />
+      </div>
+
+      <div style={styles.content}>
+        {sessions.length === 0 ? (
+          <div style={styles.emptyBox}>
+            <p style={styles.emptyIcon}>🎯</p>
+            <p style={styles.emptyText}>No interviews yet!</p>
+            <button style={styles.startBtn} onClick={() => navigate("/")}>
+              Start Your First Interview
+            </button>
+          </div>
+        ) : (
+          sessions.map((session, index) => (
+            <div key={session._id} style={styles.card}>
+              {/* Session Header */}
+              <div
+                style={styles.cardHeader}
+                onClick={() => setExpanded(expanded === index ? null : index)}
+              >
+                <div style={styles.cardLeft}>
+                  <span style={styles.roleText}>{session.role}</span>
+                  <span style={styles.dateText}>
+                    {formatDate(session.createdAt)}
+                  </span>
+                </div>
+                <div style={styles.cardRight}>
+                  <span
+                    style={{
+                      ...styles.scoreBadge,
+                      background: getScoreColor(session.overallScore),
+                    }}
+                  >
+                    {session.overallScore}/10
+                  </span>
+                  <span style={styles.arrow}>
+                    {expanded === index ? "▲" : "▼"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Expanded Questions */}
+              {expanded === index && (
+                <div style={styles.questionsBox}>
+                  {session.questions.map((q, i) => (
+                    <div key={i} style={styles.questionItem}>
+                      <p style={styles.questionLabel}>
+                        Q{i + 1}: {q.question}
+                      </p>
+                      <p style={styles.answerText}>📝 {q.answer}</p>
+                      <p style={styles.feedbackText}>💬 {q.feedback}</p>
+                      <span
+                        style={{
+                          ...styles.miniScore,
+                          background: getScoreColor(q.score),
+                        }}
+                      >
+                        Score: {q.score}/10
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  container: {
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)",
+    paddingBottom: "60px",
+  },
+  centered: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)",
+  },
+  navbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "20px 40px",
+    borderBottom: "1px solid rgba(255,255,255,0.1)",
+    background: "rgba(255,255,255,0.03)",
+  },
+  backBtn: {
+    background: "rgba(255,255,255,0.08)",
+    border: "1px solid rgba(255,255,255,0.15)",
+    borderRadius: "8px",
+    color: "#fff",
+    padding: "8px 16px",
+    fontSize: "14px",
+  },
+  title: {
+    color: "#fff",
+    fontSize: "20px",
+    fontWeight: "700",
+  },
+  content: {
+    maxWidth: "800px",
+    margin: "40px auto",
+    padding: "0 20px",
+  },
+  emptyBox: {
+    textAlign: "center",
+    padding: "80px 20px",
+  },
+  emptyIcon: {
+    fontSize: "60px",
+    marginBottom: "16px",
+  },
+  emptyText: {
+    color: "#888",
+    fontSize: "18px",
+    marginBottom: "24px",
+  },
+  startBtn: {
+    padding: "12px 28px",
+    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    border: "none",
+    borderRadius: "10px",
+    color: "#fff",
+    fontSize: "15px",
+    fontWeight: "600",
+  },
+  card: {
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "16px",
+    marginBottom: "16px",
+    overflow: "hidden",
+  },
+  cardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "20px 24px",
+    cursor: "pointer",
+  },
+  cardLeft: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+  roleText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: "16px",
+  },
+  dateText: {
+    color: "#888",
+    fontSize: "13px",
+  },
+  cardRight: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+  },
+  scoreBadge: {
+    padding: "6px 14px",
+    borderRadius: "20px",
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: "14px",
+  },
+  arrow: {
+    color: "#888",
+    fontSize: "12px",
+  },
+  questionsBox: {
+    borderTop: "1px solid rgba(255,255,255,0.08)",
+    padding: "20px 24px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  questionItem: {
+    background: "rgba(255,255,255,0.03)",
+    borderRadius: "12px",
+    padding: "16px",
+    borderLeft: "3px solid #667eea",
+  },
+  questionLabel: {
+    color: "#fff",
+    fontWeight: "600",
+    marginBottom: "8px",
+    fontSize: "14px",
+  },
+  answerText: {
+    color: "#aaa",
+    fontSize: "13px",
+    marginBottom: "8px",
+    lineHeight: "1.5",
+  },
+  feedbackText: {
+    color: "#888",
+    fontSize: "13px",
+    marginBottom: "10px",
+    lineHeight: "1.5",
+  },
+  miniScore: {
+    padding: "4px 10px",
+    borderRadius: "12px",
+    color: "#fff",
+    fontSize: "12px",
+    fontWeight: "600",
+  },
+};
+
+export default History;
