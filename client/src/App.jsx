@@ -7,7 +7,7 @@ import Interview from "./pages/Interview";
 import History from "./pages/History";
 
 function App() {
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState(localStorage.getItem("token"));
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
 
   useEffect(() => {
@@ -17,6 +17,10 @@ function App() {
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
+  const handleAuth = (newToken) => {
+    setToken(newToken);
   };
 
   return (
@@ -33,11 +37,19 @@ function App() {
       />
       <Route
         path="/login"
-        element={<Login toggleTheme={toggleTheme} theme={theme} />}
+        element={
+          <Login toggleTheme={toggleTheme} theme={theme} onAuth={handleAuth} />
+        }
       />
       <Route
         path="/register"
-        element={<Register toggleTheme={toggleTheme} theme={theme} />}
+        element={
+          <Register
+            toggleTheme={toggleTheme}
+            theme={theme}
+            onAuth={handleAuth}
+          />
+        }
       />
       <Route
         path="/interview"

@@ -4,7 +4,7 @@ import API from "../utils/api";
 import toast from "react-hot-toast";
 import { GoogleLogin } from "@react-oauth/google";
 
-function Login() {
+function Login({ onAuth }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,6 +19,7 @@ function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       toast.success("Welcome back! 👋");
+      onAuth(res.data.token);
       navigate("/");
     } catch (err) {
       const msg = err.response?.data?.message || "Something went wrong";
@@ -37,6 +38,7 @@ function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       toast.success("Welcome! 👋");
+      onAuth(res.data.token);
       navigate("/");
     } catch (err) {
       toast.error("Google login failed");
