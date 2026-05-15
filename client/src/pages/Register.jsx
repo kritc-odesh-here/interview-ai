@@ -11,6 +11,7 @@ function Register({ onAuth }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegister = async () => {
     setLoading(true);
@@ -72,13 +73,21 @@ function Register({ onAuth }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
-          style={styles.input}
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div style={styles.inputWrapper}>
+          <input
+            style={styles.input}
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            style={styles.eyeBtn}
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </button>
+        </div>
 
         <button
           style={styles.button}
@@ -204,6 +213,19 @@ const styles = {
     padding: "0 10px",
     color: "var(--text-muted)",
     fontSize: "13px",
+  },
+  inputWrapper: {
+    position: "relative",
+  },
+  eyeBtn: {
+    position: "absolute",
+    right: "12px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    background: "none",
+    border: "none",
+    fontSize: "18px",
+    cursor: "pointer",
   },
 };
 

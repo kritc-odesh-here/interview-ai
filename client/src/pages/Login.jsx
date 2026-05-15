@@ -10,6 +10,7 @@ function Login({ onAuth }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -60,13 +61,21 @@ function Login({ onAuth }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
-          style={styles.input}
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div style={styles.inputWrapper}>
+          <input
+            style={styles.input}
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            style={styles.eyeBtn}
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </button>
+        </div>
 
         <button style={styles.button} onClick={handleLogin} disabled={loading}>
           {loading ? "Logging in..." : "Login"}
@@ -134,8 +143,8 @@ const styles = {
   input: {
     width: "100%",
     padding: "14px 16px",
-    marginBottom: "16px",
     background: "var(--bg-card)",
+    marginBottom: "16px",
     border: "1px solid var(--border-color)",
     color: "var(--text-primary)",
     borderRadius: "10px",
@@ -186,6 +195,19 @@ const styles = {
     padding: "0 10px",
     color: "var(--text-muted)",
     fontSize: "13px",
+  },
+  inputWrapper: {
+    position: "relative",
+  },
+  eyeBtn: {
+    position: "absolute",
+    right: "12px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    background: "none",
+    border: "none",
+    fontSize: "18px",
+    cursor: "pointer",
   },
 };
 
