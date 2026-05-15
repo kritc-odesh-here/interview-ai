@@ -25,7 +25,7 @@ const tips = [
   "🚀 Show enthusiasm — interviewers hire people who genuinely want the role.",
 ];
 
-function Home() {
+function Home({ toggleTheme, theme }) {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const [customRole, setCustomRole] = useState("");
@@ -58,6 +58,9 @@ function Home() {
         <h2 style={styles.logo}>🎯 InterviewAI</h2>
         <div style={styles.navRight}>
           <span style={styles.navName}>Hi, {user?.name} 👋</span>
+          <button style={styles.themeBtn} onClick={toggleTheme}>
+            {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+          </button>
           <button
             style={styles.historyBtn}
             onClick={() => navigate("/history")}
@@ -92,71 +95,67 @@ function Home() {
             Start →
           </button>
         </div>
-      </div>
 
-      {/* Difficulty Selector */}
-      <div style={styles.difficultyBox}>
-        <p style={styles.difficultyLabel}>Select Difficulty</p>
-        <div style={styles.difficultyBtns}>
-          {["Easy", "Medium", "Hard"].map((level) => (
-            <button
-              key={level}
-              style={{
-                ...styles.diffBtn,
-                background:
-                  difficulty === level
-                    ? level === "Easy"
-                      ? "#00c48c"
-                      : level === "Medium"
-                        ? "#667eea"
-                        : "#ff6b6b"
-                    : "rgba(255,255,255,0.08)",
-                border:
-                  difficulty === level
-                    ? "none"
-                    : "1px solid rgba(255,255,255,0.15)",
-              }}
-              onClick={() => setDifficulty(level)}
-            >
-              {level === "Easy"
-                ? "😊 Easy"
-                : level === "Medium"
-                  ? "😤 Medium"
-                  : "🔥 Hard"}
-            </button>
-          ))}
+        {/* Difficulty Selector */}
+        <div style={styles.selectorBox}>
+          <p style={styles.selectorLabel}>Select Difficulty</p>
+          <div style={styles.selectorBtns}>
+            {["Easy", "Medium", "Hard"].map((level) => (
+              <button
+                key={level}
+                style={{
+                  ...styles.selBtn,
+                  background:
+                    difficulty === level
+                      ? level === "Easy"
+                        ? "var(--success)"
+                        : level === "Medium"
+                          ? "var(--gradient-main)"
+                          : "var(--danger)"
+                      : "var(--bg-card)",
+                  border: `1px solid var(--border-color)`,
+                  color: "var(--text-primary)",
+                }}
+                onClick={() => setDifficulty(level)}
+              >
+                {level === "Easy"
+                  ? "😊 Easy"
+                  : level === "Medium"
+                    ? "😤 Medium"
+                    : "🔥 Hard"}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Tip of the Day */}
-      <div style={styles.tipBox}>
-        <p style={styles.tipTitle}>💡 Tip of the Day</p>
-        <p style={styles.tipText}>{todayTip}</p>
-      </div>
+        {/* Question Count Selector */}
+        <div style={styles.selectorBox}>
+          <p style={styles.selectorLabel}>Number of Questions</p>
+          <div style={styles.selectorBtns}>
+            {[5, 10, 15].map((count) => (
+              <button
+                key={count}
+                style={{
+                  ...styles.selBtn,
+                  background:
+                    questionCount === count
+                      ? "var(--gradient-main)"
+                      : "var(--bg-card)",
+                  border: `1px solid var(--border-color)`,
+                  color: "var(--text-primary)",
+                }}
+                onClick={() => setQuestionCount(count)}
+              >
+                {count} Questions
+              </button>
+            ))}
+          </div>
+        </div>
 
-      {/* Question Count Selector */}
-      <div style={styles.difficultyBox}>
-        <p style={styles.difficultyLabel}>Number of Questions</p>
-        <div style={styles.difficultyBtns}>
-          {[5, 10, 15].map((count) => (
-            <button
-              key={count}
-              style={{
-                ...styles.diffBtn,
-                background:
-                  questionCount === count
-                    ? "linear-gradient(90deg, #667eea, #764ba2)"
-                    : "rgba(255,255,255,0.08)",
-                border:
-                  questionCount === count
-                    ? "none"
-                    : "1px solid rgba(255,255,255,0.15)",
-              }}
-              onClick={() => setQuestionCount(count)}
-            >
-              {count} Questions
-            </button>
-          ))}
+        {/* Tip of the Day */}
+        <div style={styles.tipBox}>
+          <p style={styles.tipTitle}>💡 Tip of the Day</p>
+          <p style={styles.tipText}>{todayTip}</p>
         </div>
       </div>
 
@@ -167,12 +166,14 @@ function Home() {
             key={role.title}
             style={styles.card}
             onClick={() => startInterview(role.title)}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "translateY(-5px)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "translateY(0)")
-            }
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-5px)";
+              e.currentTarget.style.borderColor = "var(--accent-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.borderColor = "var(--border-color)";
+            }}
           >
             <div style={styles.cardIcon}>{role.icon}</div>
             <h3 style={styles.cardTitle}>{role.title}</h3>
@@ -188,7 +189,7 @@ function Home() {
 const styles = {
   container: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)",
+    background: "var(--gradient-bg)",
     paddingBottom: "60px",
   },
   navbar: {
@@ -196,31 +197,40 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     padding: "20px 40px",
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
-    background: "rgba(255,255,255,0.03)",
+    borderBottom: "1px solid var(--border-color)",
+    background: "var(--bg-card)",
+    backdropFilter: "blur(10px)",
   },
   logo: {
     fontSize: "22px",
     fontWeight: "700",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
   },
   navRight: {
     display: "flex",
     alignItems: "center",
-    gap: "16px",
+    gap: "12px",
   },
   navName: {
-    color: "#aaa",
+    color: "var(--text-secondary)",
     fontSize: "14px",
+  },
+  themeBtn: {
+    padding: "8px 16px",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "8px",
+    color: "var(--text-primary)",
+    fontSize: "13px",
   },
   historyBtn: {
     padding: "8px 18px",
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.15)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
     borderRadius: "8px",
-    color: "#fff",
+    color: "var(--text-primary)",
     fontSize: "14px",
   },
   logoutBtn: {
@@ -228,23 +238,23 @@ const styles = {
     background: "rgba(255,100,100,0.15)",
     border: "1px solid rgba(255,100,100,0.3)",
     borderRadius: "8px",
-    color: "#ff6b6b",
+    color: "var(--danger)",
     fontSize: "14px",
   },
   hero: {
     textAlign: "center",
-    padding: "60px 20px 60px",
+    padding: "60px 20px 40px",
   },
   heroTitle: {
     fontSize: "42px",
     fontWeight: "800",
     marginBottom: "16px",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
   },
   heroSubtitle: {
-    color: "#888",
+    color: "var(--text-secondary)",
     fontSize: "16px",
     maxWidth: "500px",
     margin: "0 auto 24px",
@@ -253,25 +263,68 @@ const styles = {
     display: "flex",
     gap: "12px",
     maxWidth: "500px",
-    margin: "0 auto",
+    margin: "0 auto 20px",
   },
   customInput: {
     flex: 1,
     padding: "14px 16px",
-    background: "rgba(255,255,255,0.07)",
-    border: "1px solid rgba(255,255,255,0.15)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
     borderRadius: "10px",
-    color: "#fff",
+    color: "var(--text-primary)",
     fontSize: "15px",
   },
   customBtn: {
     padding: "14px 24px",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     border: "none",
     borderRadius: "10px",
     color: "#fff",
     fontSize: "15px",
     fontWeight: "600",
+  },
+  selectorBox: {
+    maxWidth: "500px",
+    margin: "0 auto 20px",
+    textAlign: "center",
+  },
+  selectorLabel: {
+    color: "var(--text-muted)",
+    fontSize: "13px",
+    marginBottom: "10px",
+  },
+  selectorBtns: {
+    display: "flex",
+    gap: "10px",
+    justifyContent: "center",
+  },
+  selBtn: {
+    padding: "10px 24px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "600",
+  },
+  tipBox: {
+    maxWidth: "700px",
+    margin: "20px auto 50px",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "14px",
+    padding: "20px 24px",
+    textAlign: "center",
+  },
+  tipTitle: {
+    color: "var(--accent-primary)",
+    fontWeight: "700",
+    fontSize: "14px",
+    marginBottom: "8px",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
+  },
+  tipText: {
+    color: "var(--text-secondary)",
+    fontSize: "15px",
+    lineHeight: "1.6",
   },
   grid: {
     display: "grid",
@@ -282,12 +335,12 @@ const styles = {
     padding: "0 30px",
   },
   card: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
     borderRadius: "16px",
     padding: "30px",
     cursor: "pointer",
-    transition: "transform 0.2s",
+    transition: "transform 0.2s, border-color 0.2s",
     textAlign: "center",
   },
   cardIcon: {
@@ -298,68 +351,21 @@ const styles = {
     fontSize: "16px",
     fontWeight: "700",
     marginBottom: "8px",
-    color: "#fff",
+    color: "var(--text-primary)",
   },
   cardSub: {
-    color: "#666",
+    color: "var(--text-muted)",
     fontSize: "13px",
     marginBottom: "20px",
   },
   startBtn: {
     padding: "10px 20px",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     border: "none",
     borderRadius: "8px",
     color: "#fff",
     fontSize: "14px",
     fontWeight: "600",
-  },
-
-  difficultyBox: {
-    maxWidth: "500px",
-    margin: "20px auto 0",
-    textAlign: "center",
-    marginBottom: "20px",
-  },
-  difficultyLabel: {
-    color: "#888",
-    fontSize: "13px",
-    marginBottom: "10px",
-  },
-  difficultyBtns: {
-    display: "flex",
-    gap: "10px",
-    justifyContent: "center",
-  },
-  diffBtn: {
-    padding: "10px 24px",
-    borderRadius: "8px",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-  tipBox: {
-    maxWidth: "700px",
-    margin: "0 auto 50px",
-    background:
-      "linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15))",
-    border: "1px solid rgba(102,126,234,0.3)",
-    borderRadius: "14px",
-    padding: "20px 24px",
-    textAlign: "center",
-  },
-  tipTitle: {
-    color: "#667eea",
-    fontWeight: "700",
-    fontSize: "14px",
-    marginBottom: "8px",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-  },
-  tipText: {
-    color: "#ccc",
-    fontSize: "15px",
-    lineHeight: "1.6",
   },
 };
 

@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -7,19 +8,56 @@ import History from "./pages/History";
 
 function App() {
   const token = localStorage.getItem("token");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+
+  useEffect(() => {
+    document.body.className = theme === "light" ? "light" : "";
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
 
   return (
     <Routes>
-      <Route path="/" element={token ? <Home /> : <Navigate to="/login" />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/"
+        element={
+          token ? (
+            <Home toggleTheme={toggleTheme} theme={theme} />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/login"
+        element={<Login toggleTheme={toggleTheme} theme={theme} />}
+      />
+      <Route
+        path="/register"
+        element={<Register toggleTheme={toggleTheme} theme={theme} />}
+      />
       <Route
         path="/interview"
-        element={token ? <Interview /> : <Navigate to="/login" />}
+        element={
+          token ? (
+            <Interview toggleTheme={toggleTheme} theme={theme} />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
       />
       <Route
         path="/history"
-        element={token ? <History /> : <Navigate to="/login" />}
+        element={
+          token ? (
+            <History toggleTheme={toggleTheme} theme={theme} />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
       />
     </Routes>
   );

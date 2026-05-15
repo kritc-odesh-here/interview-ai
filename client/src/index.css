@@ -4,11 +4,63 @@
   box-sizing: border-box;
 }
 
+/* Dark Mode (default) */
+:root {
+  --bg-primary: #222831;
+  --bg-secondary: #393e46;
+  --bg-card: rgba(57, 62, 70, 0.6);
+  --bg-card-hover: rgba(57, 62, 70, 0.85);
+
+  --border-color: rgba(0, 173, 181, 0.25);
+
+  --text-primary: #eeeeee;
+  --text-secondary: #cfd2d4;
+  --text-muted: #9aa0a6;
+
+  --accent-primary: #00adb5;
+  --accent-secondary: #3dd6dd;
+
+  --gradient-main: linear-gradient(90deg, #00adb5, #3dd6dd);
+  --gradient-bg: linear-gradient(135deg, #222831 0%, #393e46 100%);
+
+  --success: #00c48c;
+  --warning: #f0b429;
+  --danger: #ff6b6b;
+}
+
+/* Light Mode */
+.light {
+  --bg-primary: #eeeeee;
+  --bg-secondary: #ffffff;
+
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+
+  --border-color: rgba(0, 173, 181, 0.2);
+
+  --text-primary: #222831;
+  --text-secondary: #393e46;
+  --text-muted: #6b7280;
+
+  --accent-primary: #00adb5;
+  --accent-secondary: #008c93;
+
+  --gradient-main: linear-gradient(90deg, #00adb5, #008c93);
+  --gradient-bg: linear-gradient(135deg, #eeeeee 0%, #dfe3e6 100%);
+
+  --success: #009e6f;
+  --warning: #d18b00;
+  --danger: #d9534f;
+}
+
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #0f0f1a;
-  color: #ffffff;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   min-height: 100vh;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 
 button {
@@ -46,42 +98,12 @@ textarea {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  /* Navbar */
-  .navbar {
-    padding: 16px 20px !important;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  /* Hero */
   h1 {
     font-size: 28px !important;
-  }
-
-  /* Cards grid */
-  .grid {
-    grid-template-columns: 1fr 1fr !important;
-    padding: 0 16px !important;
-    gap: 16px !important;
-  }
-
-  /* Custom role input */
-  .customBox {
-    flex-direction: column !important;
-    padding: 0 20px !important;
-  }
-
-  /* Interview content */
-  .content {
-    padding: 20px 16px !important;
   }
 }
 
 @media (max-width: 480px) {
-  .grid {
-    grid-template-columns: 1fr !important;
-  }
-
   h1 {
     font-size: 24px !important;
   }

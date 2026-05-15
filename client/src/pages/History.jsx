@@ -218,7 +218,7 @@ function History() {
 const styles = {
   container: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)",
+    background: "var(--gradient-bg)",
     paddingBottom: "60px",
   },
   centered: {
@@ -226,7 +226,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)",
+    background: "var(--gradient-bg)",
   },
   navbar: {
     display: "flex",
@@ -234,18 +234,18 @@ const styles = {
     alignItems: "center",
     padding: "20px 40px",
     borderBottom: "1px solid rgba(255,255,255,0.1)",
-    background: "rgba(255,255,255,0.03)",
+    background: "var(--bg-card)",
   },
   backBtn: {
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.15)",
-    borderRadius: "8px",
-    color: "#fff",
     padding: "8px 16px",
+    background: "var(--bg-secondary)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "8px",
+    color: "var(--text-primary)",
     fontSize: "14px",
   },
   title: {
-    color: "#fff",
+    color: "var(--text-primary)",
     fontSize: "20px",
     fontWeight: "700",
   },
@@ -269,7 +269,7 @@ const styles = {
   },
   startBtn: {
     padding: "12px 28px",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     border: "none",
     borderRadius: "10px",
     color: "#fff",
@@ -277,14 +277,14 @@ const styles = {
     fontWeight: "600",
   },
   chartBox: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
     borderRadius: "16px",
     padding: "24px",
     marginBottom: "30px",
   },
   chartTitle: {
-    color: "#fff",
+    color: "var(--text-primary)",
     fontSize: "18px",
     fontWeight: "700",
     marginBottom: "20px",
@@ -297,25 +297,25 @@ const styles = {
   },
   statBox: {
     textAlign: "center",
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--bg-secondary)",
     borderRadius: "12px",
     padding: "16px",
   },
   statValue: {
     fontSize: "24px",
     fontWeight: "800",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     marginBottom: "4px",
   },
   statLabel: {
-    color: "#888",
+    color: "var(--text-muted)",
     fontSize: "12px",
   },
   card: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
     borderRadius: "16px",
     marginBottom: "16px",
     overflow: "hidden",
@@ -333,12 +333,12 @@ const styles = {
     gap: "4px",
   },
   roleText: {
-    color: "#fff",
+    color: "var(--text-primary)",
     fontWeight: "600",
     fontSize: "16px",
   },
   dateText: {
-    color: "#888",
+    color: "var(--text-muted)",
     fontSize: "13px",
   },
   cardRight: {
@@ -354,7 +354,7 @@ const styles = {
     fontSize: "14px",
   },
   arrow: {
-    color: "#888",
+    color: "var(--text-muted)",
     fontSize: "12px",
   },
   questionsBox: {
@@ -365,25 +365,25 @@ const styles = {
     gap: "20px",
   },
   questionItem: {
-    background: "rgba(255,255,255,0.03)",
+    background: "var(--bg-secondary)",
+    borderLeft: "3px solid var(--accent-primary)",
     borderRadius: "12px",
     padding: "16px",
-    borderLeft: "3px solid #667eea",
   },
   questionLabel: {
-    color: "#fff",
+    color: "var(--text-primary)",
     fontWeight: "600",
     marginBottom: "8px",
     fontSize: "14px",
   },
   answerText: {
-    color: "#aaa",
+    color: "var(--text-secondary)",
     fontSize: "13px",
     marginBottom: "8px",
     lineHeight: "1.5",
   },
   feedbackText: {
-    color: "#888",
+    color: "var(--text-muted)",
     fontSize: "13px",
     marginBottom: "10px",
     lineHeight: "1.5",

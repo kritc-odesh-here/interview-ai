@@ -331,14 +331,14 @@ function Interview() {
 const styles = {
   container: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)",
+    background: "var(--gradient-bg)",
   },
   centered: {
     minHeight: "100vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)",
+    background: "var(--gradient-bg)",
   },
   loadingBox: {
     textAlign: "center",
@@ -364,20 +364,20 @@ const styles = {
     borderBottom: "1px solid rgba(255,255,255,0.1)",
   },
   backBtn: {
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.15)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    color: "var(--text-primary)",
     borderRadius: "8px",
-    color: "#fff",
     padding: "8px 16px",
     fontSize: "14px",
   },
   role: {
-    color: "#fff",
+    color: "var(--text-primary)",
     fontSize: "18px",
     fontWeight: "600",
   },
   progress: {
-    color: "#667eea",
+    color: "var(--accent-primary)",
     fontWeight: "700",
     fontSize: "16px",
   },
@@ -387,7 +387,7 @@ const styles = {
   },
   progressFill: {
     height: "100%",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     transition: "width 0.3s ease",
   },
   content: {
@@ -396,14 +396,14 @@ const styles = {
     padding: "40px 20px",
   },
   questionBox: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
     borderRadius: "16px",
     padding: "30px",
     marginBottom: "24px",
   },
   questionLabel: {
-    color: "#667eea",
+    color: "var(--accent-primary)",
     fontSize: "13px",
     fontWeight: "600",
     marginBottom: "12px",
@@ -411,17 +411,17 @@ const styles = {
     letterSpacing: "1px",
   },
   questionText: {
-    color: "#fff",
+    ccolor: "var(--text-primary)",
     fontSize: "18px",
     lineHeight: "1.6",
   },
   textarea: {
     width: "100%",
     padding: "16px",
-    background: "rgba(255,255,255,0.07)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    color: "var(--text-primary)",
     borderRadius: "12px",
-    color: "#fff",
     fontSize: "15px",
     lineHeight: "1.6",
     resize: "vertical",
@@ -430,7 +430,7 @@ const styles = {
   submitBtn: {
     width: "100%",
     padding: "14px",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     border: "none",
     borderRadius: "10px",
     color: "#fff",
@@ -450,7 +450,7 @@ const styles = {
     marginBottom: "20px",
   },
   scoreLabel: {
-    color: "#888",
+    color: "var(--text-muted)",
     fontSize: "14px",
   },
   scoreBadge: {
@@ -461,20 +461,20 @@ const styles = {
     fontSize: "16px",
   },
   feedbackTitle: {
-    color: "#667eea",
+    color: "var(--accent-primary)",
     fontWeight: "600",
     marginBottom: "8px",
     marginTop: "16px",
   },
   feedbackText: {
-    color: "#ccc",
+    color: "var(--text-secondary)",
     lineHeight: "1.6",
     fontSize: "15px",
   },
   nextBtn: {
     width: "100%",
     padding: "14px",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     border: "none",
     borderRadius: "10px",
     color: "#fff",
@@ -484,8 +484,8 @@ const styles = {
   },
   finishedBox: {
     textAlign: "center",
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
     borderRadius: "20px",
     padding: "60px 40px",
     maxWidth: "420px",
@@ -498,7 +498,7 @@ const styles = {
   finishedTitle: {
     fontSize: "28px",
     fontWeight: "700",
-    color: "#fff",
+    color: "var(--text-primary)",
     marginBottom: "8px",
   },
   finishedSubtitle: {
@@ -508,7 +508,7 @@ const styles = {
   bigScore: {
     fontSize: "48px",
     fontWeight: "800",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     marginBottom: "30px",
@@ -520,7 +520,7 @@ const styles = {
   },
   primaryBtn: {
     padding: "12px 24px",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     border: "none",
     borderRadius: "10px",
     color: "#fff",
@@ -529,10 +529,10 @@ const styles = {
   },
   secondaryBtn: {
     padding: "12px 24px",
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.15)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    color: "var(--text-primary)",
     borderRadius: "10px",
-    color: "#fff",
     fontSize: "15px",
   },
   headerRight: {
@@ -545,12 +545,12 @@ const styles = {
     fontWeight: "700",
   },
   reviewCard: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    borderLeft: "4px solid var(--accent-primary)",
     borderRadius: "16px",
     padding: "24px",
     marginBottom: "16px",
-    borderLeft: "4px solid #667eea",
   },
   reviewAnswer: {
     color: "#aaa",
@@ -575,8 +575,8 @@ const styles = {
   overallBox: {
     textAlign: "center",
     padding: "40px",
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
     borderRadius: "16px",
     marginTop: "24px",
   },
@@ -588,14 +588,14 @@ const styles = {
   overallScore: {
     fontSize: "52px",
     fontWeight: "800",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     marginBottom: "24px",
   },
   finishBtn: {
     padding: "14px 32px",
-    background: "linear-gradient(90deg, #667eea, #764ba2)",
+    background: "var(--gradient-main)",
     border: "none",
     borderRadius: "10px",
     color: "#fff",
