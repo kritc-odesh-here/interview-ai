@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import toast from "react-hot-toast";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -25,6 +26,20 @@ function Login() {
       toast.error(msg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const res = await API.post("/api/auth/google", {
+        credential: credentialResponse.credential,
+      });
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      toast.success("Welcome! 👋");
+      navigate("/");
+    } catch (err) {
+      toast.error("Google login failed");
     }
   };
 
@@ -55,6 +70,24 @@ function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
+        <div style={styles.divider}>
+          <span style={styles.dividerText}>or</span>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => toast.error("Google login failed")}
+          />
+        </div>
+
+        <p style={styles.link}></p>
         <p style={styles.link}>
           Don't have an account?{" "}
           <Link to="/register" style={styles.linkText}>
@@ -135,6 +168,22 @@ const styles = {
     color: "var(--accent-primary)",
     textDecoration: "none",
     fontWeight: "600",
+  },
+  divider: {
+    textAlign: "center",
+    margin: "16px 0",
+    position: "relative",
+    borderTop: "1px solid var(--border-color)",
+  },
+  dividerText: {
+    position: "absolute",
+    top: "-10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    background: "var(--bg-card)",
+    padding: "0 10px",
+    color: "var(--text-muted)",
+    fontSize: "13px",
   },
 };
 
