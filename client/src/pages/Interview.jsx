@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import toast from "react-hot-toast";
+import jsPDF from "jspdf";
 
 function Interview() {
   const [questions, setQuestions] = useState([]);
@@ -109,6 +110,88 @@ function Interview() {
     }
   };
 
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = 20;
+
+    // Title
+    doc.setFontSize(22);
+    doc.setTextColor(255, 107, 53);
+    doc.text("InterviewAI Report", pageWidth / 2, y, { align: "center" });
+    y += 10;
+
+    // Role and date
+    doc.setFontSize(12);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Role: ${role}`, pageWidth / 2, (y += 8), { align: "center" });
+    doc.text(
+      `Date: ${new Date().toLocaleDateString()}`,
+      pageWidth / 2,
+      (y += 6),
+      { align: "center" },
+    );
+
+    // Overall score
+    const overallScore = Math.round(
+      allResults.reduce((sum, r) => sum + r.score, 0) / allResults.length,
+    );
+    doc.setFontSize(16);
+    doc.setTextColor(255, 107, 53);
+    doc.text(`Overall Score: ${overallScore}/10`, pageWidth / 2, (y += 12), {
+      align: "center",
+    });
+
+    // Divider
+    doc.setDrawColor(255, 107, 53);
+    doc.line(20, (y += 8), pageWidth - 20, y);
+    y += 10;
+
+    // Questions
+    allResults.forEach((result, index) => {
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+
+      // Question
+      doc.setFontSize(12);
+      doc.setTextColor(255, 107, 53);
+      doc.text(`Q${index + 1}: ${result.question}`, 20, y, {
+        maxWidth: pageWidth - 40,
+      });
+      y += Math.ceil(result.question.length / 80) * 6 + 4;
+
+      // Answer
+      doc.setFontSize(10);
+      doc.setTextColor(60, 60, 60);
+      doc.text(`Answer: ${result.answer}`, 20, y, {
+        maxWidth: pageWidth - 40,
+      });
+      y += Math.ceil(result.answer.length / 90) * 5 + 4;
+
+      // Feedback
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Feedback: ${result.feedback}`, 20, y, {
+        maxWidth: pageWidth - 40,
+      });
+      y += Math.ceil(result.feedback.length / 90) * 5 + 4;
+
+      // Score
+      doc.setTextColor(255, 107, 53);
+      doc.text(`Score: ${result.score}/10`, 20, y);
+      y += 10;
+
+      // Divider
+      doc.setDrawColor(220, 220, 220);
+      doc.line(20, y, pageWidth - 20, y);
+      y += 8;
+    });
+
+    doc.save(`InterviewAI-${role}-${new Date().toLocaleDateString()}.pdf`);
+    toast.success("PDF downloaded! 📄");
+  };
+
   const handleFinish = async () => {
     const overallScore = Math.round(
       allResults.reduce((sum, r) => sum + r.score, 0) / allResults.length,
@@ -166,9 +249,19 @@ function Interview() {
           <div style={styles.overallBox}>
             <p style={styles.overallLabel}>Overall Score</p>
             <p style={styles.overallScore}>{overallScore}/10</p>
-            <button style={styles.finishBtn} onClick={() => setFinished(true)}>
-              See Final Result 🏆
-            </button>
+            <div
+              style={{ display: "flex", gap: "12px", justifyContent: "center" }}
+            >
+              <button style={styles.downloadBtn} onClick={downloadPDF}>
+                Download PDF 📄
+              </button>
+              <button
+                style={styles.finishBtn}
+                onClick={() => setFinished(true)}
+              >
+                See Final Result 🏆
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -198,7 +291,7 @@ function Interview() {
           <div style={styles.trophy}>🏆</div>
           <h1 style={styles.finishedTitle}>Interview Complete!</h1>
           <p style={styles.finishedSubtitle}>Overall Score</p>
-          <div style={styles.bigScore}>{overallScore}/10</div>
+
           <div style={styles.finishedBtns}>
             <button style={styles.primaryBtn} onClick={() => navigate("/")}>
               Try Another Role
@@ -438,10 +531,11 @@ const styles = {
     fontWeight: "600",
   },
   feedbackBox: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--bg-secondary)",
+    border: "2px solid var(--border-color)",
     borderRadius: "16px",
     padding: "30px",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
   },
   scoreRow: {
     display: "flex",
@@ -599,6 +693,15 @@ const styles = {
     border: "none",
     borderRadius: "10px",
     color: "#fff",
+    fontSize: "16px",
+    fontWeight: "600",
+  },
+  downloadBtn: {
+    padding: "14px 32px",
+    background: "var(--bg-secondary)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "10px",
+    color: "var(--text-primary)",
     fontSize: "16px",
     fontWeight: "600",
   },
