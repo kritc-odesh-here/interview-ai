@@ -291,6 +291,7 @@ function Interview() {
           <div style={styles.trophy}>🏆</div>
           <h1 style={styles.finishedTitle}>Interview Complete!</h1>
           <p style={styles.finishedSubtitle}>Overall Score</p>
+          <div style={styles.bigScore}>{overallScore}/10</div>
 
           <div style={styles.finishedBtns}>
             <button style={styles.primaryBtn} onClick={() => navigate("/")}>
@@ -432,6 +433,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     background: "var(--gradient-bg)",
+    padding: "20px",
   },
   loadingBox: {
     textAlign: "center",
@@ -453,8 +455,10 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "20px 40px",
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
+    padding: "16px 20px",
+    borderBottom: "1px solid var(--border-color)",
+    flexWrap: "wrap",
+    gap: "8px",
   },
   backBtn: {
     background: "var(--bg-card)",
@@ -466,8 +470,10 @@ const styles = {
   },
   role: {
     color: "var(--text-primary)",
-    fontSize: "18px",
+    fontSize: "16px",
     fontWeight: "600",
+    textAlign: "center",
+    flex: 1,
   },
   progress: {
     color: "var(--accent-primary)",
@@ -486,14 +492,14 @@ const styles = {
   content: {
     maxWidth: "700px",
     margin: "0 auto",
-    padding: "40px 20px",
+    padding: "24px 16px",
   },
   questionBox: {
     background: "var(--bg-card)",
     border: "1px solid var(--border-color)",
     borderRadius: "16px",
-    padding: "30px",
-    marginBottom: "24px",
+    padding: "20px",
+    marginBottom: "20px",
   },
   questionLabel: {
     color: "var(--accent-primary)",
@@ -504,8 +510,8 @@ const styles = {
     letterSpacing: "1px",
   },
   questionText: {
-    ccolor: "var(--text-primary)",
-    fontSize: "18px",
+    color: "var(--text-primary)",
+    fontSize: "16px",
     lineHeight: "1.6",
   },
   textarea: {
@@ -581,7 +587,7 @@ const styles = {
     background: "var(--bg-card)",
     border: "1px solid var(--border-color)",
     borderRadius: "20px",
-    padding: "60px 40px",
+    padding: "40px 24px",
     maxWidth: "420px",
     width: "100%",
   },
@@ -611,6 +617,7 @@ const styles = {
     display: "flex",
     gap: "12px",
     justifyContent: "center",
+    flexWrap: "wrap",
   },
   primaryBtn: {
     padding: "12px 24px",

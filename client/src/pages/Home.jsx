@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const roles = [
@@ -33,6 +33,14 @@ function Home({ toggleTheme, theme }) {
   const [questionCount, setQuestionCount] = useState(5);
   const todayTip = tips[new Date().getDate() % tips.length];
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -51,25 +59,233 @@ function Home({ toggleTheme, theme }) {
     startInterview(customRole.trim());
   };
 
+  const styles = {
+    container: {
+      minHeight: "100vh",
+      background: "var(--gradient-bg)",
+      paddingBottom: "60px",
+    },
+    navbar: {
+      display: "flex",
+      flexDirection: "column",
+      padding: "16px 20px",
+      borderBottom: "1px solid var(--border-color)",
+      background: "var(--bg-card)",
+      backdropFilter: "blur(10px)",
+      gap: "10px",
+    },
+    navTop: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    navBottom: {
+      display: "flex",
+      gap: "8px",
+      justifyContent: "space-between",
+    },
+    navRight: {
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+    },
+    logo: {
+      fontSize: "22px",
+      fontWeight: "700",
+      background: "var(--gradient-main)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+    },
+    navRight: {
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      flexWrap: "wrap",
+    },
+    navName: {
+      color: "var(--text-secondary)",
+      fontSize: "14px",
+    },
+    themeBtn: {
+      padding: "6px 12px",
+      background: "var(--bg-card)",
+      border: "1px solid var(--border-color)",
+      borderRadius: "8px",
+      color: "var(--text-primary)",
+      fontSize: "12px",
+    },
+    historyBtn: {
+      padding: "6px 12px",
+      background: "var(--bg-card)",
+      border: "1px solid var(--border-color)",
+      borderRadius: "8px",
+      color: "var(--text-primary)",
+      fontSize: "12px",
+    },
+    logoutBtn: {
+      padding: "6px 12px",
+      background: "rgba(255,100,100,0.15)",
+      border: "1px solid rgba(255,100,100,0.3)",
+      borderRadius: "8px",
+      color: "var(--danger)",
+      fontSize: "12px",
+    },
+    hero: {
+      textAlign: "center",
+      padding: isMobile ? "24px 16px 16px" : "60px 20px 40px",
+    },
+    heroTitle: {
+      fontSize: isMobile ? "28px" : "42px",
+      fontWeight: "800",
+      marginBottom: "12px",
+      background: "var(--gradient-main)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+    },
+    heroSubtitle: {
+      color: "var(--text-secondary)",
+      fontSize: "14px",
+      maxWidth: "500px",
+      margin: "0 auto 16px",
+    },
+    customBox: {
+      display: "flex",
+      gap: "8px",
+      maxWidth: "500px",
+      margin: "0 auto 14px",
+      padding: "0 4px",
+    },
+    customInput: {
+      flex: 1,
+      padding: "12px 14px",
+      background: "var(--bg-card)",
+      border: "1px solid var(--border-color)",
+      borderRadius: "10px",
+      color: "var(--text-primary)",
+      fontSize: "14px",
+    },
+    customBtn: {
+      padding: "12px 20px",
+      background: "var(--gradient-main)",
+      border: "none",
+      borderRadius: "10px",
+      color: "#fff",
+      fontSize: "14px",
+      fontWeight: "600",
+    },
+    selectorBox: {
+      maxWidth: "500px",
+      margin: "0 auto 14px",
+      textAlign: "center",
+    },
+    selectorLabel: {
+      color: "var(--text-muted)",
+      fontSize: "12px",
+      marginBottom: "8px",
+    },
+    selectorBtns: {
+      display: "flex",
+      gap: "8px",
+      justifyContent: "center",
+    },
+    selBtn: {
+      padding: "8px 16px",
+      borderRadius: "8px",
+      fontSize: "13px",
+      fontWeight: "600",
+      flex: 1,
+      maxWidth: "120px",
+    },
+    tipBox: {
+      maxWidth: "700px",
+      margin: isMobile ? "0 auto 20px" : "20px auto 50px",
+      background: "var(--bg-card)",
+      border: "1px solid var(--border-color)",
+      borderRadius: "14px",
+      padding: isMobile ? "12px 16px" : "20px 24px",
+      textAlign: "center",
+    },
+    tipTitle: {
+      color: "var(--accent-primary)",
+      fontWeight: "700",
+      fontSize: "12px",
+      marginBottom: "6px",
+      textTransform: "uppercase",
+      letterSpacing: "1px",
+    },
+    tipText: {
+      color: "var(--text-secondary)",
+      fontSize: "13px",
+      lineHeight: "1.5",
+    },
+    grid: {
+      display: "grid",
+      gridTemplateColumns: isMobile
+        ? "repeat(2, 1fr)"
+        : "repeat(auto-fit, minmax(240px, 1fr))",
+      gap: isMobile ? "12px" : "24px",
+      maxWidth: "1100px",
+      margin: "0 auto",
+      padding: isMobile ? "0 16px" : "0 30px",
+    },
+    card: {
+      background: "var(--bg-card)",
+      border: "1px solid var(--border-color)",
+      borderRadius: "14px",
+      padding: isMobile ? "16px 12px" : "30px",
+      cursor: "pointer",
+      transition: "transform 0.2s, border-color 0.2s",
+      textAlign: "center",
+    },
+    cardIcon: {
+      fontSize: "32px",
+      marginBottom: "10px",
+    },
+    cardTitle: {
+      fontSize: "14px",
+      fontWeight: "700",
+      marginBottom: "6px",
+      color: "var(--text-primary)",
+    },
+    cardSub: {
+      color: "var(--text-muted)",
+      fontSize: "11px",
+      marginBottom: "14px",
+    },
+    startBtn: {
+      padding: "8px 16px",
+      background: "var(--gradient-main)",
+      border: "none",
+      borderRadius: "8px",
+      color: "#fff",
+      fontSize: "12px",
+      fontWeight: "600",
+    },
+  };
+
   return (
     <div style={styles.container}>
       {/* Navbar */}
       <div style={styles.navbar}>
-        <h2 style={styles.logo}>🎯 InterviewAI</h2>
-        <div style={styles.navRight}>
+        <div style={styles.navTop}>
+          <h2 style={styles.logo}>🎯 InterviewAI</h2>
           <span style={styles.navName}>Hi, {user?.name} 👋</span>
+        </div>
+        <div style={styles.navBottom}>
           <button style={styles.themeBtn} onClick={toggleTheme}>
             {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
           </button>
-          <button
-            style={styles.historyBtn}
-            onClick={() => navigate("/history")}
-          >
-            History
-          </button>
-          <button style={styles.logoutBtn} onClick={handleLogout}>
-            Logout
-          </button>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              style={styles.historyBtn}
+              onClick={() => navigate("/history")}
+            >
+              History
+            </button>
+            <button style={styles.logoutBtn} onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
@@ -86,7 +302,11 @@ function Home({ toggleTheme, theme }) {
           <input
             style={styles.customInput}
             type="text"
-            placeholder="Or type any role... e.g. Android Developer"
+            placeholder={
+              window.innerWidth < 768
+                ? "Enter role..."
+                : "Or type any role... e.g. Android Developer"
+            }
             value={customRole}
             onChange={(e) => setCustomRole(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCustomRole()}
@@ -185,188 +405,5 @@ function Home({ toggleTheme, theme }) {
     </div>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    background: "var(--gradient-bg)",
-    paddingBottom: "60px",
-  },
-  navbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "20px 40px",
-    borderBottom: "1px solid var(--border-color)",
-    background: "var(--bg-card)",
-    backdropFilter: "blur(10px)",
-  },
-  logo: {
-    fontSize: "22px",
-    fontWeight: "700",
-    background: "var(--gradient-main)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-  },
-  navRight: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-  navName: {
-    color: "var(--text-secondary)",
-    fontSize: "14px",
-  },
-  themeBtn: {
-    padding: "8px 16px",
-    background: "var(--bg-card)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "8px",
-    color: "var(--text-primary)",
-    fontSize: "13px",
-  },
-  historyBtn: {
-    padding: "8px 18px",
-    background: "var(--bg-card)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "8px",
-    color: "var(--text-primary)",
-    fontSize: "14px",
-  },
-  logoutBtn: {
-    padding: "8px 18px",
-    background: "rgba(255,100,100,0.15)",
-    border: "1px solid rgba(255,100,100,0.3)",
-    borderRadius: "8px",
-    color: "var(--danger)",
-    fontSize: "14px",
-  },
-  hero: {
-    textAlign: "center",
-    padding: "60px 20px 40px",
-  },
-  heroTitle: {
-    fontSize: "42px",
-    fontWeight: "800",
-    marginBottom: "16px",
-    background: "var(--gradient-main)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-  },
-  heroSubtitle: {
-    color: "var(--text-secondary)",
-    fontSize: "16px",
-    maxWidth: "500px",
-    margin: "0 auto 24px",
-  },
-  customBox: {
-    display: "flex",
-    gap: "12px",
-    maxWidth: "500px",
-    margin: "0 auto 20px",
-  },
-  customInput: {
-    flex: 1,
-    padding: "14px 16px",
-    background: "var(--bg-card)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "10px",
-    color: "var(--text-primary)",
-    fontSize: "15px",
-  },
-  customBtn: {
-    padding: "14px 24px",
-    background: "var(--gradient-main)",
-    border: "none",
-    borderRadius: "10px",
-    color: "#fff",
-    fontSize: "15px",
-    fontWeight: "600",
-  },
-  selectorBox: {
-    maxWidth: "500px",
-    margin: "0 auto 20px",
-    textAlign: "center",
-  },
-  selectorLabel: {
-    color: "var(--text-muted)",
-    fontSize: "13px",
-    marginBottom: "10px",
-  },
-  selectorBtns: {
-    display: "flex",
-    gap: "10px",
-    justifyContent: "center",
-  },
-  selBtn: {
-    padding: "10px 24px",
-    borderRadius: "8px",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-  tipBox: {
-    maxWidth: "700px",
-    margin: "20px auto 50px",
-    background: "var(--bg-card)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "14px",
-    padding: "20px 24px",
-    textAlign: "center",
-  },
-  tipTitle: {
-    color: "var(--accent-primary)",
-    fontWeight: "700",
-    fontSize: "14px",
-    marginBottom: "8px",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-  },
-  tipText: {
-    color: "var(--text-secondary)",
-    fontSize: "15px",
-    lineHeight: "1.6",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "24px",
-    maxWidth: "1100px",
-    margin: "0 auto",
-    padding: "0 30px",
-  },
-  card: {
-    background: "var(--bg-card)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "16px",
-    padding: "30px",
-    cursor: "pointer",
-    transition: "transform 0.2s, border-color 0.2s",
-    textAlign: "center",
-  },
-  cardIcon: {
-    fontSize: "40px",
-    marginBottom: "16px",
-  },
-  cardTitle: {
-    fontSize: "16px",
-    fontWeight: "700",
-    marginBottom: "8px",
-    color: "var(--text-primary)",
-  },
-  cardSub: {
-    color: "var(--text-muted)",
-    fontSize: "13px",
-    marginBottom: "20px",
-  },
-  startBtn: {
-    padding: "10px 20px",
-    background: "var(--gradient-main)",
-    border: "none",
-    borderRadius: "8px",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-};
 
 export default Home;

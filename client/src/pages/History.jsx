@@ -64,11 +64,12 @@ function History() {
     <div style={styles.container}>
       {/* Navbar */}
       <div style={styles.navbar}>
-        <button style={styles.backBtn} onClick={() => navigate("/")}>
-          ← Back to Home
-        </button>
-        <h2 style={styles.title}>Interview History 📋</h2>
-        <div />
+        <div style={styles.navTop}>
+          <button style={styles.backBtn} onClick={() => navigate("/")}>
+            ← Back
+          </button>
+          <h2 style={styles.title}>Interview History 📋</h2>
+        </div>
       </div>
 
       <div style={styles.content}>
@@ -83,7 +84,7 @@ function History() {
         ) : (
           <>
             {/* Progress Chart */}
-            {sessions.length > 1 && (
+            {sessions.length > 1 ? (
               <div style={styles.chartBox}>
                 <h3 style={styles.chartTitle}>📈 Your Progress</h3>
                 <ResponsiveContainer width="100%" height={250}>
@@ -154,6 +155,13 @@ function History() {
                     <p style={styles.statLabel}>Latest Score</p>
                   </div>
                 </div>
+              </div>
+            ) : (
+              <div style={styles.noGraphBox}>
+                <p style={styles.noGraphIcon}>📈</p>
+                <p style={styles.noGraphText}>
+                  Complete at least 2 interviews to see your progress graph!
+                </p>
               </div>
             )}
 
@@ -230,11 +238,16 @@ const styles = {
   },
   navbar: {
     display: "flex",
+    flexDirection: "column",
+    padding: "16px 20px",
+    borderBottom: "1px solid var(--border-color)",
+    background: "var(--bg-card)",
+    gap: "10px",
+  },
+  navTop: {
+    display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "20px 40px",
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
-    background: "var(--bg-card)",
   },
   backBtn: {
     padding: "8px 16px",
@@ -251,8 +264,8 @@ const styles = {
   },
   content: {
     maxWidth: "800px",
-    margin: "40px auto",
-    padding: "0 20px",
+    margin: "20px auto",
+    padding: "0 16px",
   },
   emptyBox: {
     textAlign: "center",
@@ -280,8 +293,8 @@ const styles = {
     background: "var(--bg-card)",
     border: "1px solid var(--border-color)",
     borderRadius: "16px",
-    padding: "24px",
-    marginBottom: "30px",
+    padding: "16px",
+    marginBottom: "20px",
   },
   chartTitle: {
     color: "var(--text-primary)",
@@ -291,8 +304,8 @@ const styles = {
   },
   statsRow: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
-    gap: "16px",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: "12px",
     marginTop: "24px",
   },
   statBox: {
@@ -394,6 +407,22 @@ const styles = {
     color: "#fff",
     fontSize: "12px",
     fontWeight: "600",
+  },
+  noGraphBox: {
+    textAlign: "center",
+    padding: "30px",
+    background: "var(--bg-card)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "16px",
+    marginBottom: "20px",
+  },
+  noGraphIcon: {
+    fontSize: "40px",
+    marginBottom: "12px",
+  },
+  noGraphText: {
+    color: "var(--text-muted)",
+    fontSize: "14px",
   },
 };
 
