@@ -81,30 +81,18 @@ function Home({ toggleTheme, theme }) {
     },
     navBottom: {
       display: "flex",
-      gap: "8px",
       justifyContent: "space-between",
     },
-    navRight: {
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-    },
     logo: {
-      fontSize: "22px",
+      fontSize: "20px",
       fontWeight: "700",
       background: "var(--gradient-main)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
     },
-    navRight: {
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      flexWrap: "wrap",
-    },
     navName: {
       color: "var(--text-secondary)",
-      fontSize: "14px",
+      fontSize: "13px",
     },
     themeBtn: {
       padding: "6px 12px",
@@ -130,14 +118,22 @@ function Home({ toggleTheme, theme }) {
       color: "var(--danger)",
       fontSize: "12px",
     },
+    tipStrip: {
+      textAlign: "center",
+      padding: "12px 20px",
+      color: "var(--text-muted)",
+      fontSize: "13px",
+      borderBottom: "1px solid var(--border-color)",
+      fontStyle: "italic",
+    },
     hero: {
       textAlign: "center",
-      padding: isMobile ? "24px 16px 16px" : "60px 20px 40px",
+      padding: isMobile ? "20px 16px 16px" : "40px 20px 30px",
     },
     heroTitle: {
       fontSize: isMobile ? "28px" : "42px",
       fontWeight: "800",
-      marginBottom: "12px",
+      marginBottom: "10px",
       background: "var(--gradient-main)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
@@ -146,13 +142,13 @@ function Home({ toggleTheme, theme }) {
       color: "var(--text-secondary)",
       fontSize: "14px",
       maxWidth: "500px",
-      margin: "0 auto 16px",
+      margin: "0 auto 20px",
     },
     customBox: {
       display: "flex",
       gap: "8px",
       maxWidth: "500px",
-      margin: "0 auto 14px",
+      margin: "0 auto 100px",
       padding: "0 4px",
     },
     customInput: {
@@ -173,57 +169,40 @@ function Home({ toggleTheme, theme }) {
       fontSize: "14px",
       fontWeight: "600",
     },
-    selectorBox: {
-      maxWidth: "500px",
-      margin: "0 auto 14px",
+    optionsRow: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "16px",
+      maxWidth: "600px",
+      margin: isMobile ? "0 auto 20px" : "0 auto 24px",
+      padding: "0 16px",
+    },
+    optionGroup: {
       textAlign: "center",
     },
     selectorLabel: {
       color: "var(--text-muted)",
-      fontSize: "12px",
+      fontSize: "11px",
       marginBottom: "8px",
-    },
-    selectorBtns: {
-      display: "flex",
-      gap: "8px",
-      justifyContent: "center",
-    },
-    selBtn: {
-      padding: "8px 16px",
-      borderRadius: "8px",
-      fontSize: "13px",
-      fontWeight: "600",
-      flex: 1,
-      maxWidth: "120px",
-    },
-    tipBox: {
-      maxWidth: "700px",
-      margin: isMobile ? "0 auto 20px" : "20px auto 50px",
-      background: "var(--bg-card)",
-      border: "1px solid var(--border-color)",
-      borderRadius: "14px",
-      padding: isMobile ? "12px 16px" : "20px 24px",
-      textAlign: "center",
-    },
-    tipTitle: {
-      color: "var(--accent-primary)",
-      fontWeight: "700",
-      fontSize: "12px",
-      marginBottom: "6px",
       textTransform: "uppercase",
       letterSpacing: "1px",
     },
-    tipText: {
-      color: "var(--text-secondary)",
-      fontSize: "13px",
-      lineHeight: "1.5",
+    selectorBtns: {
+      display: "flex",
+      gap: "6px",
+    },
+    selBtn: {
+      padding: isMobile ? "10px 20px" : "8px 16px",
+      borderRadius: "8px",
+      fontSize: isMobile ? "14px" : "12px",
+      fontWeight: "600",
+      minWidth: isMobile ? "80px" : "auto",
     },
     grid: {
       display: "grid",
-      gridTemplateColumns: isMobile
-        ? "repeat(2, 1fr)"
-        : "repeat(auto-fit, minmax(240px, 1fr))",
-      gap: isMobile ? "12px" : "24px",
+      gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+      gap: isMobile ? "12px" : "20px",
       maxWidth: "1100px",
       margin: "0 auto",
       padding: isMobile ? "0 16px" : "0 30px",
@@ -232,17 +211,22 @@ function Home({ toggleTheme, theme }) {
       background: "var(--bg-card)",
       border: "1px solid var(--border-color)",
       borderRadius: "14px",
-      padding: isMobile ? "16px 12px" : "30px",
+      padding: isMobile ? "20px 12px" : "24px",
       cursor: "pointer",
       transition: "transform 0.2s, border-color 0.2s",
       textAlign: "center",
+      minHeight: isMobile ? "160px" : "auto",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
     },
     cardIcon: {
-      fontSize: "32px",
+      fontSize: isMobile ? "28px" : "36px",
       marginBottom: "10px",
     },
     cardTitle: {
-      fontSize: "14px",
+      fontSize: isMobile ? "13px" : "15px",
       fontWeight: "700",
       marginBottom: "6px",
       color: "var(--text-primary)",
@@ -250,10 +234,10 @@ function Home({ toggleTheme, theme }) {
     cardSub: {
       color: "var(--text-muted)",
       fontSize: "11px",
-      marginBottom: "14px",
+      marginBottom: "12px",
     },
     startBtn: {
-      padding: "8px 16px",
+      padding: "7px 14px",
       background: "var(--gradient-main)",
       border: "none",
       borderRadius: "8px",
@@ -289,12 +273,17 @@ function Home({ toggleTheme, theme }) {
         </div>
       </div>
 
+      {/* Tip of the day - clean, no box */}
+      <div style={styles.tipStrip}>
+        💡 <em>{todayTip}</em>
+      </div>
+
       {/* Hero */}
       <div style={styles.hero}>
         <h1 style={styles.heroTitle}>Ace Your Next Interview 🔥</h1>
         <p style={styles.heroSubtitle}>
-          Pick a role below or type your own to get AI-powered questions with
-          instant feedback
+          Pick a role or type your own to get AI-powered questions with instant
+          feedback
         </p>
 
         {/* Custom Role Input */}
@@ -303,7 +292,7 @@ function Home({ toggleTheme, theme }) {
             style={styles.customInput}
             type="text"
             placeholder={
-              window.innerWidth < 768
+              isMobile
                 ? "Enter role..."
                 : "Or type any role... e.g. Android Developer"
             }
@@ -315,10 +304,12 @@ function Home({ toggleTheme, theme }) {
             Start →
           </button>
         </div>
+      </div>
 
-        {/* Difficulty Selector */}
-        <div style={styles.selectorBox}>
-          <p style={styles.selectorLabel}>Select Difficulty</p>
+      {/* Difficulty + Question Count in one row */}
+      <div style={styles.optionsRow}>
+        <div style={styles.optionGroup}>
+          <p style={styles.selectorLabel}>Difficulty</p>
           <div style={styles.selectorBtns}>
             {["Easy", "Medium", "Hard"].map((level) => (
               <button
@@ -338,19 +329,15 @@ function Home({ toggleTheme, theme }) {
                 }}
                 onClick={() => setDifficulty(level)}
               >
-                {level === "Easy"
-                  ? "😊 Easy"
-                  : level === "Medium"
-                    ? "😤 Medium"
-                    : "🔥 Hard"}
+                {level === "Easy" ? "😊" : level === "Medium" ? "😤" : "🔥"}{" "}
+                {level}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Question Count Selector */}
-        <div style={styles.selectorBox}>
-          <p style={styles.selectorLabel}>Number of Questions</p>
+        <div style={styles.optionGroup}>
+          <p style={styles.selectorLabel}>Questions</p>
           <div style={styles.selectorBtns}>
             {[5, 10, 15].map((count) => (
               <button
@@ -366,16 +353,10 @@ function Home({ toggleTheme, theme }) {
                 }}
                 onClick={() => setQuestionCount(count)}
               >
-                {count} Questions
+                {count}
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Tip of the Day */}
-        <div style={styles.tipBox}>
-          <p style={styles.tipTitle}>💡 Tip of the Day</p>
-          <p style={styles.tipText}>{todayTip}</p>
         </div>
       </div>
 
@@ -397,8 +378,8 @@ function Home({ toggleTheme, theme }) {
           >
             <div style={styles.cardIcon}>{role.icon}</div>
             <h3 style={styles.cardTitle}>{role.title}</h3>
-            <p style={styles.cardSub}>5 AI Questions + Feedback</p>
-            <button style={styles.startBtn}>Start Interview →</button>
+            <p style={styles.cardSub}>AI Questions + Feedback</p>
+            <button style={styles.startBtn}>Start →</button>
           </div>
         ))}
       </div>
