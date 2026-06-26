@@ -23,6 +23,21 @@ const sessionSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    resumeFilename: {
+      type: String,
+    },
+    resumeAnalysis: {
+      type: mongoose.Schema.Types.Mixed,
+    },
+    skills: [String],
+    projects: [String],
+    technologies: [String],
+    candidateLevel: {
+      type: String,
+    },
+    holisticSummary: {
+      type: mongoose.Schema.Types.Mixed,
+    },
   },
   { timestamps: true },
 );

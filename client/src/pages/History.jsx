@@ -9,12 +9,36 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import {
+  Search,
+  Calendar,
+  Award,
+  ChevronDown,
+  ChevronUp,
+  ArrowLeft,
+  Activity,
+  Zap,
+  BarChart3,
+  CheckCircle,
+  HelpCircle,
+  FileText,
+  MessageSquareCode,
+} from "lucide-react";
 import API from "../utils/api";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
+import PageHeader from "../components/common/PageHeader";
+import EmptyState from "../components/common/EmptyState";
+import Badge from "../components/ui/Badge";
+import Card from "../components/ui/Card";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
-function History() {
+function History({ toggleTheme, theme }) {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,18 +56,30 @@ function History() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",
+      year: "numeric",
     });
   };
 
-  const getScoreColor = (score) => {
-    if (score >= 7) return "#00c48c";
-    if (score >= 5) return "#ffb347";
-    return "#ff6b6b";
+  const getScoreVariant = (score) => {
+    if (score >= 7) return "success";
+    if (score >= 5) return "warning";
+    return "danger";
   };
+
+  // Filter sessions by search query
+  const filteredSessions = sessions.filter((session) =>
+    session.role.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Prepare chart data
   const chartData = [...sessions].reverse().map((session, index) => ({
@@ -52,378 +88,282 @@ function History() {
     date: formatDate(session.createdAt),
   }));
 
-  if (loading) {
-    return (
-      <div style={styles.centered}>
-        <p style={{ color: "#888" }}>Loading history...</p>
-      </div>
-    );
-  }
+  // Statistics
+  const totalSessions = sessions.length;
+  const averageScore = totalSessions
+    ? Math.round(sessions.reduce((sum, s) => sum + s.overallScore, 0) / totalSessions)
+    : 0;
+  const bestScore = totalSessions ? Math.max(...sessions.map((s) => s.overallScore)) : 0;
+  const latestScore = totalSessions ? sessions[0]?.overallScore : 0;
 
   return (
-    <div style={styles.container}>
-      {/* Navbar */}
-      <div style={styles.navbar}>
-        <div style={styles.navTop}>
-          <button style={styles.backBtn} onClick={() => navigate("/")}>
-            ← Back
-          </button>
-          <h2 style={styles.title}>Interview History 📋</h2>
-        </div>
-      </div>
+    <div className="min-h-screen bg-zinc-950 flex flex-col font-sans select-none">
+      <Navbar
+        user={JSON.parse(localStorage.getItem("user"))}
+        theme={theme}
+        toggleTheme={toggleTheme}
+        onLogout={handleLogout}
+      />
 
-      <div style={styles.content}>
-        {sessions.length === 0 ? (
-          <div style={styles.emptyBox}>
-            <p style={styles.emptyIcon}>🎯</p>
-            <p style={styles.emptyText}>No interviews yet!</p>
-            <button style={styles.startBtn} onClick={() => navigate("/")}>
-              Start Your First Interview
-            </button>
+      <main className="flex-grow max-w-5xl w-full mx-auto px-6 py-8">
+        <PageHeader
+          title="Interview History & Analytics"
+          description="Track your performance, review feedback details, and measure progress."
+          action={
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<ArrowLeft size={14} />}
+              onClick={() => navigate("/")}
+            >
+              Back to Home
+            </Button>
+          }
+        />
+
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 space-y-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-zinc-800 border-t-primary" />
+            <p className="text-zinc-500 text-sm">Loading history data...</p>
           </div>
+        ) : sessions.length === 0 ? (
+          <EmptyState
+            icon={Activity}
+            title="No sessions recorded yet"
+            description="Start practicing by picking a role or inputting a custom job description to begin your mock session."
+            action={
+              <Button
+                variant="primary"
+                onClick={() => navigate("/")}
+                leftIcon={<Zap size={14} />}
+              >
+                Start First Mock Session
+              </Button>
+            }
+          />
         ) : (
-          <>
-            {/* Progress Chart */}
-            {sessions.length > 1 ? (
-              <div style={styles.chartBox}>
-                <h3 style={styles.chartTitle}>📈 Your Progress</h3>
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={chartData}>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="rgba(255,255,255,0.05)"
-                    />
-                    <XAxis
-                      dataKey="name"
-                      stroke="#666"
-                      fontSize={12}
-                      tick={{ fill: "#666" }}
-                    />
-                    <YAxis
-                      domain={[0, 10]}
-                      stroke="#666"
-                      fontSize={12}
-                      tick={{ fill: "#666" }}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        background: "#1a1a2e",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        borderRadius: "8px",
-                        color: "#fff",
-                      }}
-                      formatter={(value) => [`${value}/10`, "Score"]}
-                      labelFormatter={(label) => `Session: ${label}`}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="score"
-                      stroke="#667eea"
-                      strokeWidth={3}
-                      dot={{ fill: "#764ba2", r: 6 }}
-                      activeDot={{ r: 8, fill: "#667eea" }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-
-                {/* Stats Row */}
-                <div style={styles.statsRow}>
-                  <div style={styles.statBox}>
-                    <p style={styles.statValue}>{sessions.length}</p>
-                    <p style={styles.statLabel}>Total Sessions</p>
-                  </div>
-                  <div style={styles.statBox}>
-                    <p style={styles.statValue}>
-                      {Math.round(
-                        sessions.reduce((sum, s) => sum + s.overallScore, 0) /
-                          sessions.length,
-                      )}
-                      /10
-                    </p>
-                    <p style={styles.statLabel}>Average Score</p>
-                  </div>
-                  <div style={styles.statBox}>
-                    <p style={styles.statValue}>
-                      {Math.max(...sessions.map((s) => s.overallScore))}/10
-                    </p>
-                    <p style={styles.statLabel}>Best Score</p>
-                  </div>
-                  <div style={styles.statBox}>
-                    <p style={styles.statValue}>
-                      {sessions[0]?.overallScore}/10
-                    </p>
-                    <p style={styles.statLabel}>Latest Score</p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div style={styles.noGraphBox}>
-                <p style={styles.noGraphIcon}>📈</p>
-                <p style={styles.noGraphText}>
-                  Complete at least 2 interviews to see your progress graph!
+          <div className="space-y-8">
+            {/* Top Analytics Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="p-5 border border-border-subtle bg-zinc-900/40" hover={false}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  Total Sessions
                 </p>
-              </div>
+                <h3 className="text-3xl font-extrabold text-white mt-1.5">{totalSessions}</h3>
+                <p className="text-[10px] text-zinc-600 mt-1">Sessions completed</p>
+              </Card>
+
+              <Card className="p-5 border border-border-subtle bg-zinc-900/40" hover={false}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  Average Score
+                </p>
+                <div className="flex items-baseline gap-1 mt-1.5">
+                  <h3 className="text-3xl font-extrabold text-white">{averageScore}</h3>
+                  <span className="text-sm font-semibold text-zinc-500">/10</span>
+                </div>
+                <p className="text-[10px] text-zinc-600 mt-1">Overall avg score</p>
+              </Card>
+
+              <Card className="p-5 border border-border-subtle bg-zinc-900/40" hover={false}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  Best Session
+                </p>
+                <div className="flex items-baseline gap-1 mt-1.5">
+                  <h3 className="text-3xl font-extrabold text-white">{bestScore}</h3>
+                  <span className="text-sm font-semibold text-zinc-500">/10</span>
+                </div>
+                <p className="text-[10px] text-zinc-600 mt-1">Highest rating hit</p>
+              </Card>
+
+              <Card className="p-5 border border-border-subtle bg-zinc-900/40" hover={false}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  Latest Score
+                </p>
+                <div className="flex items-baseline gap-1 mt-1.5">
+                  <h3 className="text-3xl font-extrabold text-white">{latestScore}</h3>
+                  <span className="text-sm font-semibold text-zinc-500">/10</span>
+                </div>
+                <p className="text-[10px] text-zinc-600 mt-1">Most recent mock</p>
+              </Card>
+            </div>
+
+            {/* Performance Trend Graph */}
+            {sessions.length > 1 && (
+              <Card className="p-6 border border-border-subtle bg-zinc-900/20" hover={false}>
+                <h3 className="text-sm font-bold tracking-tight text-white mb-6 flex items-center gap-2">
+                  <BarChart3 size={16} className="text-primary" />
+                  <span>Performance Over Time</span>
+                </h3>
+                <div className="w-full h-[250px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData} margin={{ left: -20, right: 10 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
+                      <XAxis
+                        dataKey="name"
+                        stroke="#4b5563"
+                        fontSize={10}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis
+                        domain={[0, 10]}
+                        stroke="#4b5563"
+                        fontSize={10}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          background: "#18181b",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          borderRadius: "12px",
+                          fontSize: "12px",
+                          color: "#fafafa",
+                        }}
+                        formatter={(value) => [`${value}/10`, "Score"]}
+                        labelFormatter={(label) => `Session: ${label}`}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="score"
+                        stroke="#14b8a6"
+                        strokeWidth={2.5}
+                        dot={{ fill: "#14b8a6", stroke: "#09090b", strokeWidth: 2, r: 5 }}
+                        activeDot={{ r: 7, fill: "#14b8a6", stroke: "#fafafa" }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
             )}
 
-            {/* Sessions List */}
-            {sessions.map((session, index) => (
-              <div key={session._id} style={styles.card}>
-                <div
-                  style={styles.cardHeader}
-                  onClick={() => setExpanded(expanded === index ? null : index)}
-                >
-                  <div style={styles.cardLeft}>
-                    <span style={styles.roleText}>{session.role}</span>
-                    <span style={styles.dateText}>
-                      {formatDate(session.createdAt)}
-                    </span>
-                  </div>
-                  <div style={styles.cardRight}>
-                    <span
-                      style={{
-                        ...styles.scoreBadge,
-                        background: getScoreColor(session.overallScore),
-                      }}
-                    >
-                      {session.overallScore}/10
-                    </span>
-                    <span style={styles.arrow}>
-                      {expanded === index ? "▲" : "▼"}
-                    </span>
-                  </div>
+            {/* Session Logs List */}
+            <div className="space-y-4 pt-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold tracking-tight text-white">Mock Session Logs</h3>
+                  <p className="text-xs text-zinc-500">Expand a card to view questions, responses, and AI evaluations.</p>
                 </div>
 
-                {expanded === index && (
-                  <div style={styles.questionsBox}>
-                    {session.questions.map((q, i) => (
-                      <div key={i} style={styles.questionItem}>
-                        <p style={styles.questionLabel}>
-                          Q{i + 1}: {q.question}
-                        </p>
-                        <p style={styles.answerText}>📝 {q.answer}</p>
-                        <p style={styles.feedbackText}>💬 {q.feedback}</p>
-                        <span
-                          style={{
-                            ...styles.miniScore,
-                            background: getScoreColor(q.score),
-                          }}
-                        >
-                          Score: {q.score}/10
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div className="relative w-full sm:w-72">
+                  <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+                  <Input
+                    className="pl-10 py-2 h-9"
+                    type="text"
+                    placeholder="Search roles..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
               </div>
-            ))}
-          </>
+
+              {filteredSessions.length === 0 ? (
+                <div className="text-center py-12 border border-border-subtle bg-zinc-900/10 rounded-2xl">
+                  <p className="text-sm text-zinc-500">No session matched your search criteria.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredSessions.map((session, index) => {
+                    const isExpanded = expanded === index;
+                    return (
+                      <div
+                        key={session._id}
+                        className="rounded-2xl border border-border-subtle bg-zinc-900/40 overflow-hidden transition-all duration-300"
+                      >
+                        {/* Collapsed Header Bar */}
+                        <div
+                          onClick={() => setExpanded(isExpanded ? null : index)}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 cursor-pointer hover:bg-zinc-900/80 transition-colors"
+                        >
+                          <div className="flex items-start gap-3 sm:gap-4">
+                            <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-950 border border-zinc-850 text-zinc-400 shrink-0 mt-0.5">
+                              <FileText size={18} />
+                            </div>
+                            <div>
+                              <h4 className="text-sm sm:text-base font-semibold text-white tracking-tight leading-snug">
+                                {session.role}
+                              </h4>
+                              <div className="flex items-center gap-2 text-xs text-zinc-500 mt-1">
+                                <Calendar size={12} />
+                                <span>{formatDate(session.createdAt)}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t border-zinc-900/40 sm:border-t-0 pt-3 sm:pt-0 shrink-0">
+                            <Badge variant={getScoreVariant(session.overallScore)}>
+                              Score: {session.overallScore}/10
+                            </Badge>
+                            <div className="text-zinc-500 hover:text-zinc-300">
+                              {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Expandable detailed content */}
+                        {isExpanded && (
+                          <div className="border-t border-border-subtle bg-zinc-950/40 p-6 space-y-6">
+                            <h5 className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                              Evaluation Breakdown
+                            </h5>
+
+                            <div className="space-y-4">
+                              {session.questions.map((q, i) => (
+                                <div
+                                  key={i}
+                                  className="p-5 rounded-xl border border-border-subtle bg-zinc-900/20 space-y-3"
+                                >
+                                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                                    <span className="text-xs font-bold uppercase text-primary tracking-wider flex items-center gap-1.5">
+                                      <HelpCircle size={13} />
+                                      <span>Question {i + 1}</span>
+                                    </span>
+                                    <Badge variant={getScoreVariant(q.score)}>
+                                      Score: {q.score}/10
+                                    </Badge>
+                                  </div>
+
+                                  <p className="text-sm font-medium text-white leading-relaxed">
+                                    {q.question}
+                                  </p>
+
+                                  <div className="space-y-2 border-t border-border-subtle pt-3 mt-3">
+                                    <div className="text-xs">
+                                      <span className="font-semibold text-zinc-400 block mb-1">
+                                        Your Answer
+                                      </span>
+                                      <p className="text-zinc-300 bg-zinc-950/60 p-3 rounded-lg border border-border-subtle/40 text-xs font-mono leading-relaxed overflow-x-auto whitespace-pre-wrap">
+                                        {q.answer}
+                                      </p>
+                                    </div>
+
+                                    <div className="text-xs">
+                                      <span className="font-semibold text-zinc-400 block mb-1">
+                                        AI Feedback
+                                      </span>
+                                      <p className="text-zinc-400 leading-relaxed bg-zinc-900/10 p-3 rounded-lg border border-border-subtle/20">
+                                        {q.feedback}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         )}
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    background: "var(--gradient-bg)",
-    paddingBottom: "60px",
-  },
-  centered: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "var(--gradient-bg)",
-  },
-  navbar: {
-    display: "flex",
-    flexDirection: "column",
-    padding: "16px 20px",
-    borderBottom: "1px solid var(--border-color)",
-    background: "var(--bg-card)",
-    gap: "10px",
-  },
-  navTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  backBtn: {
-    padding: "8px 16px",
-    background: "var(--bg-secondary)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "8px",
-    color: "var(--text-primary)",
-    fontSize: "14px",
-  },
-  title: {
-    color: "var(--text-primary)",
-    fontSize: "20px",
-    fontWeight: "700",
-  },
-  content: {
-    maxWidth: "800px",
-    margin: "20px auto",
-    padding: "0 16px",
-  },
-  emptyBox: {
-    textAlign: "center",
-    padding: "80px 20px",
-  },
-  emptyIcon: {
-    fontSize: "60px",
-    marginBottom: "16px",
-  },
-  emptyText: {
-    color: "#888",
-    fontSize: "18px",
-    marginBottom: "24px",
-  },
-  startBtn: {
-    padding: "12px 28px",
-    background: "var(--gradient-main)",
-    border: "none",
-    borderRadius: "10px",
-    color: "#fff",
-    fontSize: "15px",
-    fontWeight: "600",
-  },
-  chartBox: {
-    background: "var(--bg-card)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "16px",
-    padding: "16px",
-    marginBottom: "20px",
-  },
-  chartTitle: {
-    color: "var(--text-primary)",
-    fontSize: "18px",
-    fontWeight: "700",
-    marginBottom: "20px",
-  },
-  statsRow: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: "12px",
-    marginTop: "24px",
-  },
-  statBox: {
-    textAlign: "center",
-    background: "var(--bg-secondary)",
-    borderRadius: "12px",
-    padding: "16px",
-  },
-  statValue: {
-    fontSize: "24px",
-    fontWeight: "800",
-    background: "var(--gradient-main)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    marginBottom: "4px",
-  },
-  statLabel: {
-    color: "var(--text-muted)",
-    fontSize: "12px",
-  },
-  card: {
-    background: "var(--bg-card)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "16px",
-    marginBottom: "16px",
-    overflow: "hidden",
-  },
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "20px 24px",
-    cursor: "pointer",
-  },
-  cardLeft: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-  },
-  roleText: {
-    color: "var(--text-primary)",
-    fontWeight: "600",
-    fontSize: "16px",
-  },
-  dateText: {
-    color: "var(--text-muted)",
-    fontSize: "13px",
-  },
-  cardRight: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-  scoreBadge: {
-    padding: "6px 14px",
-    borderRadius: "20px",
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: "14px",
-  },
-  arrow: {
-    color: "var(--text-muted)",
-    fontSize: "12px",
-  },
-  questionsBox: {
-    borderTop: "1px solid rgba(255,255,255,0.08)",
-    padding: "20px 24px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-  questionItem: {
-    background: "var(--bg-secondary)",
-    borderLeft: "3px solid var(--accent-primary)",
-    borderRadius: "12px",
-    padding: "16px",
-  },
-  questionLabel: {
-    color: "var(--text-primary)",
-    fontWeight: "600",
-    marginBottom: "8px",
-    fontSize: "14px",
-  },
-  answerText: {
-    color: "var(--text-secondary)",
-    fontSize: "13px",
-    marginBottom: "8px",
-    lineHeight: "1.5",
-  },
-  feedbackText: {
-    color: "var(--text-muted)",
-    fontSize: "13px",
-    marginBottom: "10px",
-    lineHeight: "1.5",
-  },
-  miniScore: {
-    padding: "4px 10px",
-    borderRadius: "12px",
-    color: "#fff",
-    fontSize: "12px",
-    fontWeight: "600",
-  },
-  noGraphBox: {
-    textAlign: "center",
-    padding: "30px",
-    background: "var(--bg-card)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "16px",
-    marginBottom: "20px",
-  },
-  noGraphIcon: {
-    fontSize: "40px",
-    marginBottom: "12px",
-  },
-  noGraphText: {
-    color: "var(--text-muted)",
-    fontSize: "14px",
-  },
-};
 
 export default History;
