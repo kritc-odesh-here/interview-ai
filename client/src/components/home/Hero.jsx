@@ -1,5 +1,5 @@
 import { Sparkles, Briefcase, ArrowRight, Compass, Award, Flame, Clock3, Hourglass, Timer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 
@@ -47,9 +47,87 @@ export default function Hero({
   const [mounted, setMounted] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Workspace scroll and hover elevation states
+  const workspaceRef = useRef(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
     setMounted(true);
+
+    const handleScroll = () => {
+      if (!workspaceRef.current) return;
+      const rect = workspaceRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      // Card bottom entry points and focus targets
+      const startScroll = windowHeight; // Bottom edge of viewport
+      const endScroll = windowHeight * 0.35; // 35% from the top of the viewport
+
+      let progress = (startScroll - rect.top) / (startScroll - endScroll);
+      progress = Math.max(0, Math.min(1, progress));
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Run once on load to establish scroll position values
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  const handleMouseMove = (e) => {
+    // Disable interactive parallax movement tracking on small screens to keep motion natural
+    if (window.innerWidth <= 768) return;
+
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2); // -1 to 1
+    const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2); // -1 to 1
+    
+    // Parallax maximum translation of 3px
+    setMousePos({ x: x * 3, y: y * 3 });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setMousePos({ x: 0, y: 0 });
+  };
+
+  // Compute responsive limits for scaling and translations
+  const isSmallScreen = typeof window !== "undefined" && window.innerWidth <= 768;
+  const maxTranslate = isSmallScreen ? 20 : 50;
+  const minScaleX = isSmallScreen ? 0.98 : 0.95;
+  const minScaleY = isSmallScreen ? 0.98 : 0.97;
+
+  // Active hover offsets: apply only when page is sufficiently scrolled in
+  const isHoverActive = isHovered && scrollProgress > 0.5;
+
+  // Combine scroll progression scale/position with hover scaling/lift/parallax translation
+  const scaleX = (minScaleX + scrollProgress * (1 - minScaleX)) * (isHoverActive ? 1.015 : 1);
+  const scaleY = (minScaleY + scrollProgress * (1 - minScaleY)) * (isHoverActive ? 1.015 : 1);
+  const translateY = maxTranslate * (1 - scrollProgress) + (isHoverActive ? -6 : 0);
+  const parallaxX = isHoverActive ? mousePos.x : 0;
+  const parallaxY = isHoverActive ? mousePos.y : 0;
+
+  const opacity = 0.8 + scrollProgress * 0.2;
+  const brightness = 0.85 + scrollProgress * 0.15;
+
+  const workspaceStyle = {
+    transform: `translateY(${translateY}px) translate3d(${parallaxX}px, ${parallaxY}px, 0px) scale(${scaleX}, ${scaleY})`,
+    opacity,
+    filter: `brightness(${brightness})`,
+    transition: isHovered 
+      ? "transform 250ms cubic-bezier(0.16, 1, 0.3, 1), opacity 400ms ease-out, filter 400ms ease-out" 
+      : "transform 100ms linear, opacity 100ms linear, filter 100ms linear" // Fast updates on scroll adjustments
+  };
 
   const simulateUpload = () => {
     setUploadProgress(0);
@@ -119,7 +197,16 @@ export default function Hero({
         </p>
 
         {/* Configuration Panel */}
-        <div className="w-full text-left space-y-10 max-w-[630px] mx-auto p-6 md:p-8 rounded-2xl border border-zinc-800/40 bg-zinc-900/10 backdrop-blur-sm shadow-xl shadow-black/20">
+        <div
+          ref={workspaceRef}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className={`w-full text-left space-y-10 max-w-[630px] mx-auto p-6 md:p-8 rounded-2xl border border-zinc-800/40 bg-zinc-900/10 backdrop-blur-sm workspace-elevation-container ${
+            scrollProgress > 0.75 ? "elevated" : ""
+          } ${isHoverActive ? "hovered" : ""}`}
+          style={workspaceStyle}
+        >
           
           {/* Target Role Input & Popular Chips (Step 1) */}
           <div className="space-y-4">

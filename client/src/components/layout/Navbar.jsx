@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 export default function Navbar({ user, theme, toggleTheme, onLogout }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const dropdownRef = useRef(null);
 
   // Helper to extract initials
@@ -28,8 +29,18 @@ export default function Navbar({ user, theme, toggleTheme, onLogout }) {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
+  // Track window scroll progress to floating header transition
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-900 bg-zinc-950/70 backdrop-blur-md">
+    <header className={`sticky top-0 z-50 navbar-adaptive flex items-center ${isScrolled ? "scrolled" : ""}`}>
       <div className="w-full max-w-7xl mx-auto flex h-[70px] items-center justify-between px-6 sm:px-8">
         
         {/* Left Side: Logo */}
