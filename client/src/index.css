@@ -73,157 +73,279 @@ body {
   animation: float 6s ease-in-out infinite;
 }
 
-/* Light theme overrides */
+/* Premium Light Theme Overrides */
 body.light {
-  background-color: #fafafa !important;
-  color: #09090b !important;
+  background-color: #F7F8FA !important;
+  color: #1F2937 !important;
 }
 
-body.light header {
-  background-color: rgba(255, 255, 255, 0.8) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
-body.light header h1,
-body.light header span,
-body.light header Link,
-body.light header button,
-body.light header a {
-  color: #09090b !important;
-}
-
-body.light header button:hover,
-body.light header a:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-  color: #09090b !important;
-}
-
-body.light header button.bg-red-950\/20 {
-  background-color: rgba(239, 68, 68, 0.08) !important;
-  border-color: rgba(239, 68, 68, 0.2) !important;
-  color: rgb(239, 68, 68) !important;
-}
-
-body.light header button.bg-red-950\/20:hover {
-  background-color: rgb(239, 68, 68) !important;
-  color: #ffffff !important;
-}
-
-body.light header .text-zinc-550,
-body.light header .text-zinc-500 {
-  color: #71717a !important;
-}
-
-body.light main,
-body.light section {
-  color: #09090b !important;
-}
-
-/* Background overrides for homepage sections */
-body.light section.bg-\[\#09090B\],
-body.light section.bg-\[\#0E1117\] {
-  background-color: #ffffff !important;
-}
-
-body.light section.bg-\[\#0F1115\] {
-  background-color: #f4f4f5 !important;
-}
-
-body.light section.bg-\[\#0C1016\] {
-  background-color: #f0f2f5 !important;
-}
-
-/* Typography override */
+/* Typography Hierarchy & Contrast */
 body.light h1,
 body.light h2,
 body.light h3,
 body.light h4,
 body.light h5,
 body.light h6 {
-  color: #09090b !important;
+  color: #111827 !important;
 }
 
 body.light p,
 body.light .text-zinc-400,
 body.light .text-zinc-500 {
-  color: #52525b !important;
+  color: #4B5563 !important; /* Secondary Slate Gray */
 }
 
-body.light .text-zinc-650,
-body.light .text-zinc-600 {
-  color: #71717a !important;
+body.light .text-zinc-300 {
+  color: #1F2937 !important; /* Primary Slate */
 }
 
 body.light .text-zinc-200,
-body.light .text-zinc-300 {
-  color: #18181b !important;
+body.light .text-white {
+  color: #111827 !important; /* Dark Heading Text */
 }
 
-/* Grid overlay opacity adjustment in light mode */
+body.light .text-zinc-600,
+body.light .text-zinc-650,
+body.light .text-zinc-700,
+body.light .text-zinc-550 {
+  color: #6B7280 !important; /* Muted Slate Gray */
+}
+
+/* Rich Accent Branding Overrides */
+body.light .text-primary {
+  color: #0d9488 !important;
+}
+
+body.light .bg-primary {
+  background-color: #0d9488 !important;
+}
+
+body.light .border-primary {
+  border-color: #0d9488 !important;
+}
+
+body.light .bg-primary\/10 {
+  background-color: rgba(13, 148, 136, 0.08) !important;
+}
+
+body.light .border-primary\/20,
+body.light .border-primary\/25,
+body.light .border-primary\/30 {
+  border-color: rgba(13, 148, 136, 0.2) !important;
+}
+
+/* Dynamic Grid Lines & Radial Highlights */
 body.light .bg-grid-dots {
-  background-image: radial-gradient(rgba(20, 184, 166, 0.08) 1px, transparent 1px) !important;
+  background-image: radial-gradient(rgba(13, 148, 136, 0.06) 1px, transparent 1px) !important;
 }
 
-/* Cards & configuration panels */
+body.light .bg-grid-subtle {
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.02) 1px, transparent 1px) !important;
+}
+
+/* Subtle Hero Radial Highlight */
+body.light main .bg-grid-subtle {
+  background: radial-gradient(circle at top, rgba(20, 184, 166, 0.035) 0%, transparent 60%),
+    linear-gradient(to right, rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.02) 1px, transparent 1px) !important;
+}
+
+/* Sticky Header & Navigation Dropdown */
+body.light header {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.06) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+body.light header .text-zinc-300 {
+  color: #4B5563 !important;
+}
+
+body.light header .hover\:bg-zinc-900\/60:hover {
+  background-color: #F1F4F6 !important;
+}
+
+body.light header .bg-zinc-950\/95 {
+  background-color: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Premium Card Components (Vercel/GitHub/Notion Cards) */
+body.light .bg-zinc-900,
 body.light .bg-zinc-900\/10,
 body.light .bg-zinc-900\/20,
 body.light .bg-zinc-900\/30,
 body.light .bg-zinc-900\/40,
+body.light .bg-zinc-900\/50,
 body.light .bg-zinc-900\/60,
-body.light .bg-zinc-900 {
-  background-color: #ffffff !important;
+body.light .bg-zinc-900\/70,
+body.light .bg-zinc-900\/80,
+body.light [class*="bg-zinc-900"] {
+  background-color: #FFFFFF !important;
 }
 
+/* Softer elevation & borders for card components */
+body.light .bg-zinc-900,
+body.light [class*="bg-zinc-900"] {
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Secondary Cards Surface (Notion-like background) */
+body.light .bg-zinc-950\/20,
+body.light .bg-zinc-950\/40,
+body.light .bg-zinc-950\/50,
+body.light .bg-zinc-950\/60,
+body.light .bg-zinc-950\/85,
+body.light .bg-zinc-950\/95,
+body.light .bg-zinc-950 {
+  background-color: #FCFCFD !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.01), inset 0 1px 0 #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Selected active cards / very light teal tint using 6–10% opacity */
+body.light .border-primary\/40,
+body.light .border-primary\/45,
+body.light .border-primary\/50,
+body.light .bg-primary\/5 {
+  background-color: rgba(20, 184, 166, 0.07) !important;
+  border-color: rgba(20, 184, 166, 0.3) !important;
+}
+
+/* Alternate backgrounds for section blocks */
+body.light section.bg-\[\#09090B\],
+body.light section.bg-\[\#0E1117\],
+body.light section.bg-\[\#0F1115\] {
+  background-color: #F3F5F7 !important;
+}
+
+body.light section.bg-\[\#0C1016\] {
+  background-color: #F7F8FA !important;
+}
+
+/* Subtle Divider borders */
 body.light .border-zinc-800,
 body.light .border-zinc-800\/40,
 body.light .border-zinc-800\/50,
+body.light .border-zinc-800\/60,
 body.light .border-zinc-800\/80,
 body.light .border-zinc-850,
 body.light .border-zinc-900,
-body.light .border-zinc-900\/50 {
-  border-color: rgba(0, 0, 0, 0.08) !important;
+body.light .border-zinc-900\/50,
+body.light .border-zinc-950,
+body.light hr,
+body.light .divide-zinc-850 > *,
+body.light .divide-zinc-900 > * {
+  border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
-body.light .bg-zinc-950,
-body.light .bg-zinc-950\/20,
-body.light .bg-zinc-950\/40,
-body.light .bg-zinc-950\/60,
-body.light .bg-zinc-950\/85,
-body.light .bg-zinc-950\/95 {
-  background-color: #f4f4f5 !important;
-}
-
+/* Inputs & Form selections overrides (FAFAFB background, clean outline, focus transitions) */
 body.light input,
 body.light select,
 body.light textarea {
-  background-color: #ffffff !important;
-  color: #09090b !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  background-color: #FAFAFB !important;
+  color: #1F2937 !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-body.light input::placeholder {
-  color: #a1a1aa !important;
+body.light input:focus,
+body.light select:focus,
+body.light textarea:focus {
+  border-color: #0d9488 !important;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15) !important;
+  background-color: #FFFFFF !important;
 }
 
+body.light input::placeholder,
+body.light select::placeholder,
+body.light textarea::placeholder {
+  color: #9CA3AF !important;
+}
+
+/* List details details / accordion items hover */
+body.light .hover\:bg-zinc-900\/60:hover,
+body.light .hover\:bg-zinc-900:hover,
+body.light .hover\:bg-zinc-950\/50:hover,
+body.light .hover\:bg-zinc-950:hover {
+  background-color: #F1F4F6 !important;
+  color: #111827 !important;
+}
+
+/* Custom interactive buttons / buttons hover toggles */
 body.light button.bg-zinc-900\/10,
-body.light button.bg-zinc-900\/20 {
-  background-color: #f4f4f5 !important;
+body.light button.bg-zinc-900\/20,
+body.light button.bg-zinc-950 {
+  background-color: #FCFCFD !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  color: #4B5563 !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
 }
 
-/* Specific elements on dashboard and history list */
-body.light .bg-zinc-950 {
-  background-color: #f4f4f5 !important;
+body.light button.bg-zinc-900\/10:hover,
+body.light button.bg-zinc-900\/20:hover,
+body.light button.bg-zinc-950:hover {
+  background-color: #F1F4F6 !important;
+  color: #111827 !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
 }
 
-body.light .bg-zinc-900 {
-  background-color: #ffffff !important;
+/* Teal branding buttons */
+body.light button.bg-primary {
+  background-color: #0d9488 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 1px 2px rgba(13, 148, 136, 0.15) !important;
 }
 
-body.light .border-zinc-850 {
-  border-color: rgba(0, 0, 0, 0.06) !important;
+body.light button.bg-primary:hover {
+  background-color: #0f766e !important;
 }
 
-/* History logs items detail card toggle */
+/* Danger Action elements & panels */
+body.light .bg-red-950\/5,
+body.light .bg-red-950\/20 {
+  background-color: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+  color: #dc2626 !important;
+}
+
+body.light .bg-red-950\/5:hover,
+body.light .bg-red-950\/20:hover {
+  background-color: #fecaca !important;
+  color: #991b1b !important;
+}
+
+body.light .text-red-400 {
+  color: #dc2626 !important;
+}
+
+body.light .hover\:bg-red-950\/20:hover {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+/* High contrast icons */
+body.light .text-zinc-500,
+body.light .text-zinc-400 {
+  color: #6B7280 !important;
+}
+
+body.light .text-teal-400 {
+  color: #0d9488 !important;
+}
+
+/* Progress bar rail colors in light mode */
+body.light .bg-primary\/20 {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+}
+
+/* History logs expansion detail wrapper card */
 body.light .bg-zinc-900\/50 {
-  background-color: #fbfbfb !important;
+  background-color: #FCFCFD !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
 }

@@ -119,7 +119,7 @@ export default function Hero({
         </p>
 
         {/* Configuration Panel */}
-        <div className="w-full text-left space-y-10 max-w-xl mx-auto p-6 md:p-8 rounded-2xl border border-zinc-800/40 bg-zinc-900/10 backdrop-blur-sm shadow-xl shadow-black/20">
+        <div className="w-full text-left space-y-10 max-w-[630px] mx-auto p-6 md:p-8 rounded-2xl border border-zinc-800/40 bg-zinc-900/10 backdrop-blur-sm shadow-xl shadow-black/20">
           
           {/* Target Role Input & Popular Chips (Step 1) */}
           <div className="space-y-4">
@@ -187,21 +187,21 @@ export default function Hero({
               <button
                 type="button"
                 onClick={() => setInterviewMode("quick")}
-                className={`relative p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[100px] select-none ${
+                className={`relative px-6 py-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[100px] select-none ${
                   interviewMode === "quick"
                     ? "border-primary bg-primary/[0.03] text-zinc-105 shadow-md shadow-primary/5"
                     : "border-zinc-800/50 bg-zinc-900/10 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1">
-                  <span className="text-xs font-bold text-white">Quick Interview</span>
+                  <span className="text-sm font-bold text-white">Quick Interview</span>
                   {interviewMode === "quick" && (
                     <div className="h-3.5 w-3.5 rounded-full bg-primary/25 border border-primary/30 flex items-center justify-center">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                     </div>
                   )}
                 </div>
-                <p className="text-[11px] text-zinc-400 leading-normal">
+                <p className="text-xs text-zinc-300 leading-relaxed">
                   Start instantly. Target questions based purely on selected role and difficulty.
                 </p>
               </button>
@@ -210,16 +210,16 @@ export default function Hero({
               <button
                 type="button"
                 onClick={() => setInterviewMode("personalized")}
-                className={`relative p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[100px] select-none ${
+                className={`relative px-6 py-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[100px] select-none ${
                   interviewMode === "personalized"
                     ? "border-primary bg-primary/[0.03] text-zinc-105 shadow-md shadow-primary/5"
                     : "border-zinc-800/50 bg-zinc-900/10 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1">
-                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span className="text-sm font-bold text-white flex items-center gap-1.5">
                     Personalized
-                    <span className="text-[7px] font-extrabold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 py-0.5 rounded leading-none shrink-0">
+                    <span className="text-[9px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded leading-none shrink-0">
                       Recommended
                     </span>
                   </span>
@@ -229,7 +229,7 @@ export default function Hero({
                     </div>
                   )}
                 </div>
-                <p className="text-[11px] text-zinc-400 leading-normal">
+                <p className="text-xs text-zinc-300 leading-relaxed">
                   AI analyzes your resume to tailor projects, scaling, and custom technical challenges.
                 </p>
               </button>
@@ -352,7 +352,7 @@ export default function Hero({
                   key={level}
                   type="button"
                   onClick={() => setDifficulty(level)}
-                  className={`relative p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[110px] select-none ${
+                  className={`relative px-5 py-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[110px] select-none ${
                     difficulty === level
                       ? "border-primary bg-primary/[0.03] text-zinc-100 shadow-md shadow-primary/5"
                       : "border-zinc-800/50 bg-zinc-900/10 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
@@ -362,7 +362,7 @@ export default function Hero({
                     <div className={`p-1.5 rounded-lg border transition-colors ${
                       difficulty === level ? "bg-primary/10 border-primary/20 text-primary" : "bg-zinc-950 border-zinc-850 text-zinc-500"
                     }`}>
-                      <IconComponent size={14} />
+                      <IconComponent size={16} />
                     </div>
                     {difficulty === level && (
                       <div className="h-4 w-4 rounded-full bg-primary/25 border border-primary/30 flex items-center justify-center">
@@ -371,8 +371,8 @@ export default function Hero({
                     )}
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white">{level}</h4>
-                    <p className="text-[10px] text-zinc-400 leading-normal mt-1">{desc}</p>
+                    <h4 className="text-sm font-bold text-white">{level}</h4>
+                    <p className="text-xs text-zinc-300 leading-relaxed mt-1">{desc}</p>
                   </div>
                 </button>
               ))}
@@ -393,7 +393,7 @@ export default function Hero({
                   key={count}
                   type="button"
                   onClick={() => setQuestionCount(count)}
-                  className={`relative p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[110px] select-none ${
+                  className={`relative px-5 py-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[110px] select-none ${
                     questionCount === count
                       ? "border-primary bg-primary/[0.03] text-zinc-100 shadow-md shadow-primary/5"
                       : "border-zinc-800/50 bg-zinc-900/10 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300"
@@ -403,7 +403,7 @@ export default function Hero({
                     <div className={`p-1.5 rounded-lg border transition-colors ${
                       questionCount === count ? "bg-primary/10 border-primary/20 text-primary" : "bg-zinc-950 border-zinc-850 text-zinc-500"
                     }`}>
-                      <CountIcon size={14} />
+                      <CountIcon size={16} />
                     </div>
                     {questionCount === count && (
                       <div className="h-4 w-4 rounded-full bg-primary/25 border border-primary/30 flex items-center justify-center">
@@ -412,8 +412,8 @@ export default function Hero({
                     )}
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white">{count} Questions</h4>
-                    <p className="text-[10px] text-zinc-400 leading-normal mt-1">{timeDesc}</p>
+                    <h4 className="text-sm font-bold text-white">{count} Questions</h4>
+                    <p className="text-xs text-zinc-300 leading-relaxed mt-1">{timeDesc}</p>
                   </div>
                 </button>
               ))}
@@ -428,7 +428,9 @@ export default function Hero({
               className="w-full h-12 text-sm font-semibold hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 cursor-pointer"
               rightIcon={analyzing ? null : <ArrowRight size={15} />}
             >
-              {analyzing ? "Analyzing Resume..." : "Start AI Interview"}
+              {analyzing 
+                ? (interviewMode === "personalized" ? "Analyzing Resume..." : "Generating Questions...") 
+                : "Start AI Interview"}
             </Button>
           </div>
 

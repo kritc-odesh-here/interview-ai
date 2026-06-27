@@ -131,8 +131,11 @@ function Interview() {
       localStorage.setItem("activeQuestionIndex", "0");
       localStorage.setItem("activeUserAnswers", JSON.stringify(initialAnswers));
       localStorage.setItem("activeQuestionTimers", JSON.stringify(initialTimers));
+      localStorage.setItem("interviewStartTime", Date.now().toString());
     } catch (err) {
-      toast.error("Failed to generate questions. Try again!");
+      const errMsg = err.response?.data?.message || "Failed to generate questions. Try again!";
+      toast.error(errMsg);
+      navigate("/");
     } finally {
       setLoading(false);
     }
@@ -314,6 +317,9 @@ function Interview() {
       }
 
       // 2. Save Session to MongoDB
+      const startTimeStr = localStorage.getItem("interviewStartTime");
+      const duration = startTimeStr ? Math.round((Date.now() - Number(startTimeStr)) / 1000) : 0;
+
       await API.post("/api/interview/save-session", {
         role,
         questions: gradedQuestions,
@@ -325,6 +331,7 @@ function Interview() {
         technologies: resumeAnalysisObj ? resumeAnalysisObj.technologies : [],
         candidateLevel: resumeAnalysisObj ? resumeAnalysisObj.candidateLevel : null,
         holisticSummary: generatedSummary,
+        duration,
       });
 
       toast.success("Session saved successfully!");

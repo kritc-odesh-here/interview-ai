@@ -40,6 +40,13 @@ function Home({ toggleTheme, theme }) {
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
+
+    const preselect = localStorage.getItem("preselectPersonalized");
+    if (preselect === "true") {
+      setInterviewMode("personalized");
+      localStorage.removeItem("preselectPersonalized");
+    }
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -96,14 +103,41 @@ function Home({ toggleTheme, theme }) {
         setAnalyzing(false);
       }
     } else {
-      // Quick Mode
-      localStorage.setItem("interviewMode", "quick");
-      localStorage.removeItem("resumeFilename");
-      localStorage.removeItem("resumeAnalysis");
-      localStorage.setItem("selectedRole", roleVal.trim());
-      localStorage.setItem("difficulty", difficulty);
-      localStorage.setItem("questionCount", questionCount);
-      navigate("/interview");
+      // Quick Mode - Generate questions before navigating
+      setAnalyzing(true);
+      try {
+        const payload = {
+          role: roleVal.trim(),
+          difficulty,
+          questionCount,
+        };
+        const res = await API.post("/api/interview/generate-questions", payload);
+        const loadedQuestions = res.data.questions;
+
+        const initialAnswers = new Array(loadedQuestions.length).fill("");
+        const initialTimers = loadedQuestions.map((q) => Number(q.estimatedTime) || 120);
+
+        localStorage.setItem("interviewMode", "quick");
+        localStorage.removeItem("resumeFilename");
+        localStorage.removeItem("resumeAnalysis");
+        localStorage.setItem("selectedRole", roleVal.trim());
+        localStorage.setItem("difficulty", difficulty);
+        localStorage.setItem("questionCount", questionCount);
+
+        localStorage.setItem("activeQuestions", JSON.stringify(loadedQuestions));
+        localStorage.setItem("activeQuestionIndex", "0");
+        localStorage.setItem("activeUserAnswers", JSON.stringify(initialAnswers));
+        localStorage.setItem("activeQuestionTimers", JSON.stringify(initialTimers));
+        localStorage.setItem("interviewStartTime", Date.now().toString());
+
+        toast.success("Interview session ready!");
+        navigate("/interview");
+      } catch (err) {
+        console.error(err);
+        toast.error(err.response?.data?.message || "Failed to generate questions. Please try again.");
+      } finally {
+        setAnalyzing(false);
+      }
     }
   };
 

@@ -15,6 +15,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    provider: {
+      type: String,
+      default: "local",
+      enum: ["local", "google"],
+    },
+    avatarUrl: {
+      type: String,
+      default: "",
+    },
+    theme: {
+      type: String,
+      default: "dark",
+      enum: ["light", "dark"],
+    },
   },
   { timestamps: true },
 );

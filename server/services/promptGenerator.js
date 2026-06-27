@@ -67,7 +67,7 @@ Align the complexity of questions and practical situations with the requested di
 - Include realistic follow-up prompts inside the question body.
 
 ### OUTPUT SCHEMA
-You MUST respond with a single valid JSON object containing exactly ${questionCount} questions in the array. Every element in the 'questions' array MUST be a fully populated JSON object (containing question, category, difficulty, estimatedTime, skills, and type). DO NOT output simple strings in the array. No conversational intro/outro text, only pure JSON.
+You MUST respond with a single valid JSON object containing exactly ${questionCount} questions in the array. Every element in the 'questions' array MUST be a fully populated JSON object containing: 'id', 'question', 'category', 'difficulty', 'estimatedTime', 'skills', 'type', and 'expectedAnswerGuidelines'. DO NOT output simple strings in the array. No conversational intro/outro text, only pure JSON.
 
 For every question, estimate a realistic completion duration (in seconds) as an integer based on its category and complexity:
 - Behavioral questions: 60–90 seconds
@@ -77,18 +77,20 @@ For every question, estimate a realistic completion duration (in seconds) as an 
 - System Design / Case Study / Scenario questions: 480–720 seconds
 
 CRITICAL JSON ESCAPING RULE:
-Any double quotes (") inside the "question" string MUST be properly escaped as \\" to ensure the JSON remains valid. Better yet, use single quotes (') or backtick characters for code blocks and inline templates to avoid JSON parse errors entirely.
+Any double quotes (") inside the string fields MUST be properly escaped as \\" to ensure the JSON remains valid. Better yet, use single quotes (') or backtick characters for code blocks and inline templates to avoid JSON parse errors entirely.
 
 JSON Structure:
 {
   "questions": [
     {
+      "id": 1,
       "question": "The full detailed question text or scenario layout here",
       "category": "Coding | Behavioral | System Design | Core Concepts | Case Study | Creative | Situational | Clinical",
       "difficulty": "Easy | Medium | Hard",
       "estimatedTime": 420,
       "skills": ["Skill1", "Skill2", "Skill3"],
-      "type": "Coding | Conceptual | Behavioral | Scenario | Practical | Clinical"
+      "type": "Coding | Conceptual | Behavioral | Scenario | Practical | Clinical",
+      "expectedAnswerGuidelines": "Brief guidelines of what a senior-level answer should cover (e.g. key keywords, structural approach, or critical edge cases)"
     }
   ]
 }`;

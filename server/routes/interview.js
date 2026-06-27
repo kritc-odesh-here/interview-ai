@@ -75,7 +75,7 @@ Align the complexity of questions and practical situations with the requested di
 - Include realistic follow-up prompts inside the question body (e.g., "How would you handle user resistance here?" or "What safety standards did you prioritize?").
 
 ### OUTPUT SCHEMA
-You MUST respond with a single valid JSON object containing exactly ${questionCount} questions in the array. Every element in the 'questions' array MUST be a fully populated JSON object (containing question, category, difficulty, estimatedTime, skills, and type). DO NOT output simple strings in the array. No conversational intro/outro text, only pure JSON.
+You MUST respond with a single valid JSON object containing exactly ${questionCount} questions in the array. Every element in the 'questions' array MUST be a fully populated JSON object containing: 'id', 'question', 'category', 'difficulty', 'estimatedTime', 'skills', 'type', and 'expectedAnswerGuidelines'. DO NOT output simple strings in the array. No conversational intro/outro text, only pure JSON.
 
 For every question, estimate a realistic completion duration (in seconds) as an integer based on its category and complexity:
 - Behavioral questions: 60–90 seconds
@@ -85,37 +85,138 @@ For every question, estimate a realistic completion duration (in seconds) as an 
 - System Design / Case Study / Scenario questions: 480–720 seconds
 
 CRITICAL JSON ESCAPING RULE:
-Any double quotes (") inside the "question" string MUST be properly escaped as \\" to ensure the JSON remains valid. Better yet, use single quotes (') or backtick characters for code blocks and inline templates to avoid JSON parse errors entirely.
+Any double quotes (") inside the string fields MUST be properly escaped as \\" to ensure the JSON remains valid. Better yet, use single quotes (') or backtick characters for code blocks and inline templates to avoid JSON parse errors entirely.
 
 JSON Structure:
 {
   "questions": [
     {
+      "id": 1,
       "question": "The full detailed question text or scenario layout here",
       "category": "Coding | Behavioral | System Design | Core Concepts | Case Study | Creative | Situational | Clinical",
       "difficulty": "Easy | Medium | Hard",
       "estimatedTime": 420,
       "skills": ["Skill1", "Skill2", "Skill3"],
-      "type": "Coding | Conceptual | Behavioral | Scenario | Practical | Clinical"
+      "type": "Coding | Conceptual | Behavioral | Scenario | Practical | Clinical",
+      "expectedAnswerGuidelines": "Brief guidelines of what a senior-level answer should cover (e.g. key keywords, structural approach, or critical edge cases)"
     }
   ]
 }`;
 
     console.log("SENDING PROMPT TO GROQ:\n", prompt);
 
-    const result = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-    });
-    const text = result.choices[0].message.content;
-    console.log("GROQ RESPONSE TEXT:\n", text);
+    let attempts = 0;
+    const maxAttempts = 4; // 1 initial + 3 retries
+    let parsedData = null;
+    let lastError = null;
 
-    // Clean and parse JSON
-    const clean = text.replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(clean);
+    while (attempts < maxAttempts) {
+      attempts++;
+      console.log(`Groq Generation Attempt ${attempts}...`);
+      try {
+        const result = await groq.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          response_format: { type: "json_object" },
+        });
+        const text = result.choices[0].message.content;
+        console.log(`GROQ RESPONSE TEXT (Attempt ${attempts}):\n`, text);
 
-    res.json(parsed);
+        // Clean JSON formatting wrappers
+        let clean = text.replace(/```json|```/g, "").trim();
+
+        // 1. Attempt automatic JSON repair
+        if (!clean.startsWith("{") && clean.includes("{")) {
+          const firstBrace = clean.indexOf("{");
+          const lastBrace = clean.lastIndexOf("}");
+          if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+            clean = clean.substring(firstBrace, lastBrace + 1);
+          }
+        }
+
+        let parsed;
+        try {
+          parsed = JSON.parse(clean);
+        } catch (parseErr) {
+          // Fallback repair: replace trailing commas and unescape quotes
+          try {
+            const repairedClean = clean
+              .replace(/,\s*([\]}])/g, "$1") // trailing commas
+              .replace(/\\"/g, '"')          // double escaped quotes
+              .replace(/"\s*:\s*'\s*([^']*)\s*'/g, ':"$1"'); // single quote string values
+            parsed = JSON.parse(repairedClean);
+          } catch (repairErr) {
+            throw new Error(`JSON Parse Error: ${parseErr.message}`);
+          }
+        }
+
+        // 2. Structural checks
+        if (!parsed || !Array.isArray(parsed.questions)) {
+          throw new Error("Missing 'questions' array in AI response.");
+        }
+
+        const questionsArray = parsed.questions;
+
+        // Check length
+        if (questionsArray.length !== Number(questionCount)) {
+          throw new Error(`Incomplete questions count: got ${questionsArray.length}, requested ${questionCount}.`);
+        }
+
+        // Auto-normalize fields before validating
+        questionsArray.forEach((q, idx) => {
+          // Enforce sequential correct IDs
+          q.id = idx + 1;
+
+          // Normalize skills
+          if (q.skills && typeof q.skills === "string") {
+            q.skills = [q.skills];
+          } else if (!Array.isArray(q.skills)) {
+            q.skills = [];
+          }
+        });
+
+        // 3. Strict Validation per question
+        for (let i = 0; i < questionsArray.length; i++) {
+          const q = questionsArray[i];
+
+          if (!q.question || typeof q.question !== "string" || !q.question.trim()) {
+            throw new Error(`Question at index ${i} has empty or missing question text.`);
+          }
+          if (!q.category || typeof q.category !== "string" || !q.category.trim()) {
+            throw new Error(`Question at index ${i} has missing category.`);
+          }
+          if (!q.difficulty || typeof q.difficulty !== "string" || !q.difficulty.trim()) {
+            throw new Error(`Question at index ${i} has missing difficulty.`);
+          }
+          if (q.estimatedTime === undefined || q.estimatedTime === null || typeof q.estimatedTime !== "number" || q.estimatedTime <= 0) {
+            throw new Error(`Question at index ${i} has invalid or missing estimatedTime.`);
+          }
+          if (!q.type || typeof q.type !== "string" || !q.type.trim()) {
+            throw new Error(`Question at index ${i} has missing type.`);
+          }
+          if (!q.expectedAnswerGuidelines || typeof q.expectedAnswerGuidelines !== "string" || !q.expectedAnswerGuidelines.trim()) {
+            throw new Error(`Question at index ${i} is missing expectedAnswerGuidelines.`);
+          }
+        }
+
+        // If validation succeeds:
+        parsedData = parsed;
+        break; // Exit loop!
+
+      } catch (err) {
+        console.warn(`Attempt ${attempts} failed validation: ${err.message}`);
+        lastError = err.message;
+      }
+    }
+
+    if (!parsedData) {
+      return res.status(500).json({
+        message: "Failed to generate a fully validated interview after 3 retries.",
+        error: lastError
+      });
+    }
+
+    res.json(parsedData);
   } catch (err) {
     res
       .status(500)
@@ -299,8 +400,30 @@ router.post("/save-session", protect, async (req, res) => {
       projects, 
       technologies, 
       candidateLevel, 
-      holisticSummary 
+      holisticSummary,
+      duration
     } = req.body;
+
+    // Strict validation before MongoDB persistence
+    if (!role || typeof role !== "string" || !role.trim()) {
+      return res.status(400).json({ message: "Validation failed: Role is required." });
+    }
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ message: "Validation failed: Questions array is empty." });
+    }
+
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.question || typeof q.question !== "string" || !q.question.trim()) {
+        return res.status(400).json({ message: `Validation failed: Question at index ${i} has missing text.` });
+      }
+      if (q.score === undefined || q.score === null || typeof q.score !== "number" || q.score < 0 || q.score > 10) {
+        return res.status(400).json({ message: `Validation failed: Question at index ${i} has invalid score (${q.score}).` });
+      }
+      if (!q.feedback || typeof q.feedback !== "string" || !q.feedback.trim()) {
+        return res.status(400).json({ message: `Validation failed: Question at index ${i} has missing feedback.` });
+      }
+    }
 
     const session = await Session.create({
       userId: req.userId,
@@ -313,7 +436,8 @@ router.post("/save-session", protect, async (req, res) => {
       projects,
       technologies,
       candidateLevel,
-      holisticSummary
+      holisticSummary,
+      duration: duration || 0
     });
 
     res.status(201).json({ message: "Session saved", session });
@@ -335,6 +459,85 @@ router.get("/sessions", protect, async (req, res) => {
     res
       .status(500)
       .json({ message: "Error fetching sessions", error: err.message });
+  }
+});
+
+// GET STATISTICS AGGREGATION FOR USER
+router.get("/stats", protect, async (req, res) => {
+  try {
+    const sessions = await Session.find({ userId: req.userId });
+    if (sessions.length === 0) {
+      return res.json({
+        totalInterviews: 0,
+        averageScore: 0,
+        bestScore: 0,
+        favoriteRole: "N/A",
+        resumeCount: 0,
+        quickCount: 0,
+        totalQuestions: 0,
+        averageDuration: 0,
+      });
+    }
+
+    const totalInterviews = sessions.length;
+    const bestScore = Math.max(...sessions.map(s => s.overallScore || 0));
+    const averageScore = Math.round((sessions.reduce((sum, s) => sum + (s.overallScore || 0), 0) / totalInterviews) * 10) / 10;
+
+    let resumeCount = 0;
+    let quickCount = 0;
+    let totalQuestions = 0;
+    let totalDuration = 0;
+    let durationCount = 0;
+
+    const roleCounts = {};
+
+    sessions.forEach(s => {
+      // Role occurrence tracking
+      if (s.role) {
+        roleCounts[s.role] = (roleCounts[s.role] || 0) + 1;
+      }
+      // Resume vs Quick counters
+      if (s.resumeFilename) {
+        resumeCount++;
+      } else {
+        quickCount++;
+      }
+      // Questions answered count
+      if (Array.isArray(s.questions)) {
+        totalQuestions += s.questions.length;
+      }
+      // Duration accumulator (fallback to 900 seconds/15 mins if 0)
+      const dur = s.duration && s.duration > 0 ? s.duration : 900;
+      totalDuration += dur;
+      durationCount++;
+    });
+
+    // Determine favorite role
+    let favoriteRole = "N/A";
+    let maxCount = 0;
+    Object.keys(roleCounts).forEach(role => {
+      if (roleCounts[role] > maxCount) {
+        maxCount = roleCounts[role];
+        favoriteRole = role;
+      }
+    });
+
+    const averageDuration = durationCount > 0 ? Math.round(totalDuration / durationCount) : 0;
+
+    res.json({
+      totalInterviews,
+      averageScore,
+      bestScore,
+      favoriteRole,
+      resumeCount,
+      quickCount,
+      totalQuestions,
+      averageDuration,
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error calculating statistics", error: err.message });
   }
 });
 

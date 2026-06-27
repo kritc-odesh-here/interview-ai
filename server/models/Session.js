@@ -19,6 +19,10 @@ const sessionSchema = new mongoose.Schema(
         score: Number,
       },
     ],
+    duration: {
+      type: Number,
+      default: 0,
+    },
     overallScore: {
       type: Number,
       default: 0,

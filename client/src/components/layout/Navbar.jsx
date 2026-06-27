@@ -1,12 +1,13 @@
-import { BrainCircuit, History, LogOut, Moon, Sun, Menu, X } from "lucide-react";
+import { BrainCircuit, History, LogOut, Moon, Sun, User, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import Button from "../ui/Button";
+import { useState, useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 
 export default function Navbar({ user, theme, toggleTheme, onLogout }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  // Helper to extract uppercase initials from candidate name
+  // Helper to extract initials
   const getInitials = (name) => {
     if (!name) return "AI";
     const parts = name.trim().split(/\s+/);
@@ -16,11 +17,22 @@ export default function Navbar({ user, theme, toggleTheme, onLogout }) {
     return name.slice(0, 2).toUpperCase();
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-900 bg-zinc-950/70 backdrop-blur-md">
       <div className="w-full max-w-7xl mx-auto flex h-[70px] items-center justify-between px-6 sm:px-8">
         
-        {/* Left Side: Shrunk Logo */}
+        {/* Left Side: Logo */}
         <Link to="/" className="flex items-center gap-2.5 transition hover:opacity-90">
           <div className="rounded-lg bg-primary/10 border border-primary/20 p-1.5 shrink-0">
             <BrainCircuit className="h-4.5 w-4.5 text-primary" />
@@ -30,65 +42,10 @@ export default function Navbar({ user, theme, toggleTheme, onLogout }) {
           </span>
         </Link>
 
-        {/* Desktop Navbar Actions (Hidden on Mobile) */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Right Side: Theme toggle & User Avatar Dropdown */}
+        <div className="flex items-center gap-3">
           
-          {/* User Profile info (Compact name, no subtitle) */}
-          {user && (
-            <div className="flex items-center gap-2.5 select-none">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/25 text-primary text-xs font-bold font-mono shadow-sm shrink-0">
-                {getInitials(user.name || user.email)}
-              </div>
-              <span className="inline text-xs font-semibold text-zinc-300 tracking-tight max-w-[120px] truncate">
-                {user.name || "Candidate"}
-              </span>
-            </div>
-          )}
-
-          {/* Short, subtle vertical divider */}
-          {user && <div className="h-4 w-[1px] bg-zinc-850/80" />}
-
-          {/* Actions group */}
-          <div className="flex items-center gap-1.5">
-            
-            {/* Theme Toggle (40px square) */}
-            <button
-              onClick={toggleTheme}
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-900/60 hover:text-white transition-colors duration-150 cursor-pointer"
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
-            </button>
-
-            {/* History Link (40px height, compact) */}
-            <Link to="/history" className="shrink-0">
-              <Button
-                variant="outline"
-                leftIcon={<History size={13} className="text-zinc-500" />}
-                className="h-10 px-3 border-zinc-800/80 text-zinc-300 hover:bg-zinc-900/60 rounded-lg text-xs"
-              >
-                History
-              </Button>
-            </Link>
-
-            {/* Logout button (40px height, custom hover color) */}
-            {user && (
-              <button
-                onClick={onLogout}
-                className="flex h-10 items-center gap-1.5 px-3.5 rounded-lg bg-red-950/20 border border-red-900/20 text-red-400/90 hover:bg-red-900 hover:text-white transition-colors duration-150 text-xs font-medium cursor-pointer"
-              >
-                <LogOut size={13} />
-                <span>Logout</span>
-              </button>
-            )}
-
-          </div>
-        </div>
-
-        {/* Mobile Navbar Actions Group (Visible on Mobile) */}
-        <div className="flex md:hidden items-center gap-2">
-          
-          {/* Theme Toggle (Always visible) */}
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-900/60 hover:text-white transition-colors duration-150 cursor-pointer"
@@ -97,73 +54,82 @@ export default function Navbar({ user, theme, toggleTheme, onLogout }) {
             {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
           </button>
 
-          {/* Profile Initials (Always visible if logged in) */}
+          {/* User Profile Dropdown */}
           {user && (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/25 text-primary text-xs font-bold font-mono shadow-sm shrink-0 select-none">
-              {getInitials(user.name || user.email)}
-            </div>
-          )}
-
-          {/* Hamburger Menu Toggle */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-900/60 hover:text-white transition-colors duration-150 cursor-pointer border border-zinc-800/50"
-            aria-label="Toggle navigation menu"
-          >
-            {isOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-
-        </div>
-
-      </div>
-
-      {/* Mobile Dropdown Panel */}
-      {isOpen && (
-        <div className="md:hidden border-t border-zinc-900 bg-zinc-950 px-6 py-5 space-y-4 animate-in slide-in-from-top duration-200">
-          {user && (
-            <div className="flex items-center gap-3 pb-3 border-b border-zinc-900">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/25 text-primary text-xs font-bold font-mono shadow-sm">
-                {getInitials(user.name || user.email)}
-              </div>
-              <div className="select-none">
-                <p className="text-xs font-semibold text-white">
-                  {user.name || "Candidate"}
-                </p>
-                <p className="text-[10px] text-zinc-500 truncate max-w-[200px]">
-                  {user.email}
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-3">
-            {/* History Link (Full Width) */}
-            <Link to="/history" className="w-full" onClick={() => setIsOpen(false)}>
-              <Button
-                variant="outline"
-                leftIcon={<History size={14} className="text-zinc-500" />}
-                className="w-full h-11 border-zinc-800 text-zinc-300 hover:bg-zinc-900 rounded-xl text-xs flex justify-center items-center"
-              >
-                View History
-              </Button>
-            </Link>
-
-            {/* Logout button (Full Width) */}
-            {user && (
+            <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => {
-                  setIsOpen(false);
-                  onLogout();
-                }}
-                className="w-full flex h-11 items-center justify-center gap-2 px-4 rounded-xl bg-red-950/20 border border-red-900/20 text-red-400 hover:bg-red-900 hover:text-white transition-colors duration-150 text-xs font-semibold cursor-pointer"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center focus:outline-none cursor-pointer group"
+                aria-label="User profile menu"
               >
-                <LogOut size={14} />
-                <span>Logout</span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/25 text-primary text-xs font-bold font-mono shadow-sm shrink-0 transition-all duration-200 group-hover:scale-105 group-hover:border-primary/45">
+                  {getInitials(user.name || user.email)}
+                </div>
               </button>
-            )}
-          </div>
+
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2.5 w-60 rounded-xl border border-zinc-850 bg-zinc-950/95 backdrop-blur-xl shadow-xl shadow-black/50 py-2 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
+                  
+                  {/* User Account Details */}
+                  <div className="px-4 py-2.5 flex items-center gap-3 select-none">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/25 text-primary text-sm font-bold font-mono">
+                      {getInitials(user.name || user.email)}
+                    </div>
+                    <div className="overflow-hidden">
+                      <h4 className="text-xs font-semibold text-white truncate">
+                        {user.name || "Candidate"}
+                      </h4>
+                      <p className="text-[10px] text-zinc-500 truncate mt-0.5">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="h-[1px] bg-zinc-850/80 my-1.5" />
+
+                  {/* Profile Link */}
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-xs text-zinc-300 hover:bg-zinc-900/60 hover:text-white transition-colors"
+                  >
+                    <User size={13} className="text-zinc-500" />
+                    <span>Profile</span>
+                  </Link>
+
+                  {/* Interview History Link */}
+                  <Link
+                    to="/history"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-xs text-zinc-300 hover:bg-zinc-900/60 hover:text-white transition-colors"
+                  >
+                    <History size={13} className="text-zinc-500" />
+                    <span>Interview History</span>
+                  </Link>
+
+
+
+                  <div className="h-[1px] bg-zinc-850/80 my-1.5" />
+
+                  {/* Logout Action */}
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      onLogout();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-red-400 hover:bg-red-950/20 transition-colors text-left cursor-pointer font-medium"
+                  >
+                    <LogOut size={13} className="text-red-400" />
+                    <span>Logout</span>
+                  </button>
+
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
-      )}
+      </div>
     </header>
   );
 }
